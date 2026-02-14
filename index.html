@@ -77,6 +77,30 @@
         .header-top { display: flex; justify-content: space-between; align-items: center; }
         .header-top h3 { margin: 0; font-size: 1.2em; }
 
+        /* --- NEW CREDITS STYLE --- */
+        .dev-credits {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: -6px;
+            margin-bottom: 2px;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            direction: ltr; /* English text flows left-to-right */
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+        .dev-credits strong { color: rgba(255, 255, 255, 0.9); font-weight: 600; letter-spacing: 0.3px; }
+        .dev-sep { opacity: 0.3; font-size: 1.1em; }
+        .dev-link { 
+            color: rgba(255, 255, 255, 0.6); 
+            text-decoration: none; 
+            transition: 0.2s; 
+            font-weight: 400;
+        }
+        .dev-link:hover { color: #fff; text-shadow: 0 0 8px rgba(255,255,255,0.4); }
+        /* -------------------------- */
+
         /* --- PLAN TABS --- */
         .plan-tabs-wrapper {
             display: flex; align-items: center; gap: 5px; padding-bottom: 5px;
@@ -308,6 +332,12 @@
         <div class="sidebar-header">
             <div class="header-top">
                 <h3>دستیار انتخاب واحد</h3>
+            </div>
+            
+            <div class="dev-credits">
+                <span>Created by <strong>Amirali Navidi</strong></span>
+                <span class="dev-sep">•</span>
+                <span>Support: <a href="https://t.me/AmiraliNotFoundd" class="dev-link">@AmiraliNotFoundd</a></span>
             </div>
             <div class="plan-tabs-wrapper" id="planTabsContainer">
                 <button class="add-btn-circle" onclick="addNewPlan()" title="ایجاد برنامه جدید">+</button>
@@ -817,5 +847,3 @@
 </script>
 </body>
 </html>
-
-
