@@ -51,14 +51,14 @@
         .btn-sm-danger { color: var(--danger); }
         .btn-sm-danger:hover { background: #fee; }
 
-        /* --- RANK INDICATORS (RESTORED) --- */
+        /* --- RANK INDICATORS --- */
         .rank-dot {
             width: 8px; height: 8px; border-radius: 50%;
             display: inline-block; margin-left: 6px; vertical-align: middle;
         }
-        .rank-g { background: #27ae60; box-shadow: 0 0 4px rgba(39, 174, 96, 0.4); } /* Green */
-        .rank-y { background: #f1c40f; box-shadow: 0 0 4px rgba(241, 196, 15, 0.4); } /* Yellow */
-        .rank-r { background: #e74c3c; box-shadow: 0 0 4px rgba(231, 76, 60, 0.4); } /* Red */
+        .rank-g { background: #27ae60; box-shadow: 0 0 4px rgba(39, 174, 96, 0.4); } 
+        .rank-y { background: #f1c40f; box-shadow: 0 0 4px rgba(241, 196, 15, 0.4); } 
+        .rank-r { background: #e74c3c; box-shadow: 0 0 4px rgba(231, 76, 60, 0.4); } 
 
         /* --- SIDEBAR --- */
         .controls { 
@@ -76,30 +76,6 @@
 
         .header-top { display: flex; justify-content: space-between; align-items: center; }
         .header-top h3 { margin: 0; font-size: 1.2em; }
-
-        /* --- NEW CREDITS STYLE --- */
-        .dev-credits {
-            font-size: 0.75rem;
-            color: rgba(255, 255, 255, 0.6);
-            margin-top: -6px;
-            margin-bottom: 2px;
-            font-family: 'Segoe UI', Tahoma, sans-serif;
-            direction: ltr; /* English text flows left-to-right */
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            white-space: nowrap;
-        }
-        .dev-credits strong { color: rgba(255, 255, 255, 0.9); font-weight: 600; letter-spacing: 0.3px; }
-        .dev-sep { opacity: 0.3; font-size: 1.1em; }
-        .dev-link { 
-            color: rgba(255, 255, 255, 0.6); 
-            text-decoration: none; 
-            transition: 0.2s; 
-            font-weight: 400;
-        }
-        .dev-link:hover { color: #fff; text-shadow: 0 0 8px rgba(255,255,255,0.4); }
-        /* -------------------------- */
 
         /* --- PLAN TABS --- */
         .plan-tabs-wrapper {
@@ -150,7 +126,7 @@
             border-color: var(--accent);
             box-shadow: 0 4px 12px rgba(0,0,0,0.05);
             background: #fbfdff;
-            order: -1; /* Move checked courses to top */
+            order: -1;
         }
 
         .accordion-header {
@@ -164,7 +140,6 @@
             display: flex; align-items: center; gap: 12px; flex: 1; 
         }
         
-        /* Custom Colored Checkbox */
         .custom-checkbox {
             width: 20px; height: 20px; border-radius: 6px;
             border: 2px solid #ddd; display: flex; align-items: center; justify-content: center;
@@ -187,7 +162,6 @@
         }
         .accordion-body.open { max-height: 2000px; opacity: 1; padding: 10px; }
 
-        /* Prof Radio Cards */
         .prof-grid { display: grid; gap: 6px; }
         .prof-option { position: relative; cursor: pointer; display: block; }
         .prof-option input { position: absolute; opacity: 0; width: 0; height: 0; }
@@ -205,14 +179,42 @@
             box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
         }
 
+        /* --- SIDEBAR FOOTER & CREDITS --- */
         .sidebar-footer {
-            padding: 15px; border-top: 1px solid var(--border); background: #fafafa; display: flex; gap: 10px;
+            padding: 15px; border-top: 1px solid var(--border); background: #fafafa; 
+            display: flex; flex-direction: column; gap: 15px;
         }
+        .footer-buttons { display: flex; gap: 10px; width: 100%; }
+        
         .btn-block {
             flex: 1; padding: 12px; border-radius: 8px; cursor: pointer; font-family: inherit; border: none; font-weight: bold;
         }
         .reset-btn { background: #fff; border: 1px solid var(--danger); color: var(--danger); }
         .add-course-btn { background: var(--primary); color: white; }
+
+        .credits-container {
+            display: flex; flex-direction: column; align-items: center; gap: 6px;
+            border-top: 1px dashed #ddd; padding-top: 15px;
+            direction: rtl;
+        }
+        
+        .credits-title {
+            font-size: 0.85rem; font-weight: 800; color: #7f8c8d;
+            margin-bottom: 2px;
+        }
+        
+        .dev-list {
+            display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; align-items: center;
+            font-size: 0.8rem;
+        }
+        
+        .dev-link {
+            text-decoration: none; color: #555; font-weight: 500; transition: color 0.2s;
+            position: relative;
+        }
+        .dev-link:hover { color: var(--accent); text-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        
+        .dev-sep { color: #ccc; font-size: 0.8em; }
 
         /* --- SCHEDULE --- */
         .schedule { 
@@ -333,12 +335,6 @@
             <div class="header-top">
                 <h3>دستیار انتخاب واحد</h3>
             </div>
-            
-            <div class="dev-credits">
-                <span>Created by <strong>Amirali Navidi</strong></span>
-                <span class="dev-sep">•</span>
-                <span>Support: <a href="https://t.me/AmiraliNotFoundd" class="dev-link">@AmiraliNotFoundd</a></span>
-            </div>
             <div class="plan-tabs-wrapper" id="planTabsContainer">
                 <button class="add-btn-circle" onclick="addNewPlan()" title="ایجاد برنامه جدید">+</button>
             </div>
@@ -350,9 +346,22 @@
         </div>
         <div class="course-list" id="accordion-container"></div>
         <div class="sidebar-footer">
-            <button class="btn-block add-course-btn" onclick="openAddModal()">+ افزودن درس جدید</button>
-            <button class="btn-block reset-btn" onclick="deleteCurrentPlan()">حذف برنامه</button>
-        </div>
+            <div class="footer-buttons">
+                <button class="btn-block add-course-btn" onclick="openAddModal()">+ افزودن درس جدید</button>
+                <button class="btn-block reset-btn" onclick="deleteCurrentPlan()">حذف برنامه</button>
+            </div>
+            
+            <div class="credits-container">
+                <div class="credits-title">طراحی و اجرا</div>
+                <div class="dev-list">
+                    <a href="https://t.me/AmiraliNotFoundd" target="_blank" class="dev-link">امیرعلی نویدی</a>
+                    <span class="dev-sep">•</span>
+                    <a href="https://t.me/SinaSharifi7462" target="_blank" class="dev-link">سینا شریفی</a>
+                    <span class="dev-sep">•</span>
+                    <a href="https://t.me/T_acrisius" target="_blank" class="dev-link">محمد کشتکار</a>
+                </div>
+            </div>
+            </div>
     </div>
 
     <div class="schedule">
@@ -454,7 +463,7 @@
 
     let courses = [];
     let currentTab = 'specialized';
-    let plans = [{ id: 0, selections: {}, checked: {} }]; // Added checked state
+    let plans = [{ id: 0, selections: {}, checked: {} }]; 
     let activePlanIndex = 0;
     let tempNewCourse = { profs: [] };
 
@@ -485,7 +494,6 @@
             const parsed = JSON.parse(data);
             plans = parsed.plans || [{ id: 0, selections: {}, checked: {} }];
             activePlanIndex = parsed.activePlanIndex || 0;
-            // Migration: Ensure checked object exists
             plans.forEach(p => { if(!p.checked) p.checked = {}; });
         }
         renderPlanTabs();
@@ -527,7 +535,7 @@
         if (plans.length === 1) {
             if(confirm('پاکسازی برنامه؟')) { 
                 plans[0].selections = {}; 
-                plans[0].checked = {}; // clear checked too
+                plans[0].checked = {};
                 saveState(); renderCourseList(); renderSchedule(); 
             }
             return;
@@ -555,7 +563,6 @@
 
         let visible = courses.filter(c => c.c === currentTab && (c.t.includes(query) || c.id.includes(query) || c.g.some(g => g.p.includes(query))));
 
-        // SORT: Checked courses first
         visible.sort((a, b) => {
             const isCheckedA = currentChecked[a.id];
             const isCheckedB = currentChecked[b.id];
@@ -593,7 +600,6 @@
                     </label>`;
             
             c.g.forEach(g => {
-                // RESTORED INDICATOR: g.r
                 html += `<label class="prof-option">
                     <input type="radio" name="${c.id}" value="${g.i}" ${selection === g.i ? 'checked' : ''} onchange="handleSelection('${c.id}', '${g.i}')">
                     <span class="prof-card">
@@ -627,10 +633,8 @@
         e.stopPropagation();
         const currentChecked = plans[activePlanIndex].checked;
         if (currentChecked[courseId]) {
-            // Uncheck
             delete currentChecked[courseId];
         } else {
-            // Check (Pin)
             currentChecked[courseId] = true;
         }
         saveState();
@@ -639,11 +643,8 @@
 
     function handleSelection(courseId, groupId) {
         if (groupId !== 'none') {
-            // Selecting a prof -> Auto Check the course
             plans[activePlanIndex].checked[courseId] = true;
         }
-        // NOTE: If groupId IS 'none' (deletion), we do NOT uncheck the course logic here.
-        
         plans[activePlanIndex].selections[courseId] = groupId;
         saveState();
         renderCourseList();
@@ -790,10 +791,7 @@
 
     // --- SCHEDULE RENDER & DELETION ---
     function attachDeletionListeners(el, courseId) {
-        // Double Click -> Unselect
         el.addEventListener('dblclick', () => { handleSelection(courseId, 'none'); });
-        
-        // Mobile Long Press
         let timer;
         const start = () => { timer = setTimeout(() => { if(confirm("حذف درس از برنامه؟")) handleSelection(courseId, 'none'); }, 700); };
         const cancel = () => clearTimeout(timer);
