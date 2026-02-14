@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>دستیار انتخاب واحد مکانیک - نسخه چند برنامه</title>
+    <title>دستیار انتخاب واحد مکانیک - نسخه نهایی</title>
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/misc/Farsi-Digits/font-face.css" rel="stylesheet" type="text/css" />
     
     <style>
@@ -16,10 +16,11 @@
             --text: #333;
             --danger: #e74c3c;
             --success: #27ae60;
+            --warning: #f39c12;
             --tab-inactive: #ecf0f1;
         }
 
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; outline: none; }
 
         body { 
             font-family: 'B Yekan', 'Vazirmatn', Tahoma, sans-serif; 
@@ -36,227 +37,167 @@
             gap: 20px; 
             height: 95vh; 
         }
-        
-        /* --- RANK INDICATORS --- */
-        .rank-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            display: inline-block;
-            margin-left: 8px;
-            vertical-align: middle;
-        }
-        .rank-g { background: #27ae60; box-shadow: 0 0 5px rgba(39, 174, 96, 0.5); }
-        .rank-y { background: #f1c40f; box-shadow: 0 0 5px rgba(241, 196, 15, 0.5); }
-        .rank-r { background: #e74c3c; box-shadow: 0 0 5px rgba(231, 76, 60, 0.5); }
 
-        /* --- RIGHT SIDEBAR --- */
+        /* --- ICONS & BUTTONS --- */
+        .icon-btn {
+            background: none; border: none; cursor: pointer; padding: 5px;
+            display: inline-flex; align-items: center; justify-content: center;
+            border-radius: 4px; transition: 0.2s; color: #95a5a6;
+            z-index: 2;
+        }
+        .icon-btn:hover { background: rgba(0,0,0,0.05); color: var(--primary); }
+        .icon-btn svg { width: 18px; height: 18px; fill: currentColor; }
+        
+        .btn-sm-danger { color: var(--danger); }
+        .btn-sm-danger:hover { background: #fee; }
+
+        /* --- RANK INDICATORS (RESTORED) --- */
+        .rank-dot {
+            width: 8px; height: 8px; border-radius: 50%;
+            display: inline-block; margin-left: 6px; vertical-align: middle;
+        }
+        .rank-g { background: #27ae60; box-shadow: 0 0 4px rgba(39, 174, 96, 0.4); } /* Green */
+        .rank-y { background: #f1c40f; box-shadow: 0 0 4px rgba(241, 196, 15, 0.4); } /* Yellow */
+        .rank-r { background: #e74c3c; box-shadow: 0 0 4px rgba(231, 76, 60, 0.4); } /* Red */
+
+        /* --- SIDEBAR --- */
         .controls { 
-            width: 420px;
-            min-width: 420px;
-            background: var(--card-bg); 
-            border-radius: 16px; 
+            width: 420px; min-width: 420px;
+            background: var(--card-bg); border-radius: 16px; 
             box-shadow: 0 10px 30px rgba(0,0,0,0.08); 
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
+            display: flex; flex-direction: column; overflow: hidden;
             border: 1px solid white;
         }
 
         .sidebar-header {
-            padding: 15px;
-            background: var(--primary);
-            color: white;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            flex-shrink: 0;
+            padding: 15px; background: var(--primary); color: white;
+            display: flex; flex-direction: column; gap: 10px; flex-shrink: 0;
         }
+
+        .header-top { display: flex; justify-content: space-between; align-items: center; }
+        .header-top h3 { margin: 0; font-size: 1.2em; }
 
         /* --- PLAN TABS --- */
         .plan-tabs-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            padding-bottom: 5px;
-            overflow-x: auto;
-            scrollbar-width: none;
-        }
-        .plan-tabs-wrapper::-webkit-scrollbar { display: none; }
-
-        .plan-tab {
-            background: rgba(255,255,255,0.15);
-            color: rgba(255,255,255,0.8);
-            border: 1px solid rgba(255,255,255,0.1);
-            padding: 6px 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-family: inherit;
-            font-size: 0.9em;
-            white-space: nowrap;
-            transition: 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        .plan-tab:hover { background: rgba(255,255,255,0.25); }
-        .plan-tab.active {
-            background: white;
-            color: var(--primary);
-            font-weight: bold;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            display: flex; align-items: center; gap: 5px; padding-bottom: 5px;
+            overflow-x: auto; scrollbar-width: none;
         }
         
-        .add-plan-btn {
-            background: var(--success);
-            color: white;
-            border: none;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2em;
-            cursor: pointer;
-            flex-shrink: 0;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        .plan-tab {
+            background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.8);
+            border: 1px solid rgba(255,255,255,0.1); padding: 6px 12px;
+            border-radius: 8px; cursor: pointer; font-family: inherit; font-size: 0.9em;
+            white-space: nowrap; transition: 0.2s; display: flex; align-items: center; gap: 5px;
         }
-        .add-plan-btn:hover { background: #219150; transform: scale(1.05); }
+        .plan-tab.active { background: white; color: var(--primary); font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        
+        .add-btn-circle {
+            background: var(--success); color: white; border: none;
+            width: 30px; height: 30px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2em; cursor: pointer; flex-shrink: 0;
+        }
 
         .search-box {
-            width: 100%;
-            padding: 10px;
-            border: 2px solid rgba(255,255,255,0.1);
-            border-radius: 8px;
-            background: rgba(255,255,255,0.15);
-            color: white;
-            font-family: inherit;
-            text-align: center;
+            width: 100%; padding: 10px; border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 8px; background: rgba(255,255,255,0.15); color: white;
+            font-family: inherit; text-align: center;
         }
-        .search-box:focus { outline: none; background: rgba(255,255,255,0.25); }
         .search-box::placeholder { color: rgba(255,255,255,0.7); }
 
-        .tabs {
-            display: flex;
-            background: rgba(0,0,0,0.2);
-            padding: 4px;
-            border-radius: 10px;
-            gap: 5px;
-        }
-
+        .tabs { display: flex; background: rgba(0,0,0,0.2); padding: 4px; border-radius: 10px; gap: 5px; }
         .tab-btn {
-            flex: 1;
-            background: transparent;
-            border: none;
-            color: rgba(255,255,255,0.7);
-            padding: 8px;
-            cursor: pointer;
-            border-radius: 6px;
-            font-family: inherit;
-            font-size: 0.9em;
-            transition: 0.2s;
+            flex: 1; background: transparent; border: none; color: rgba(255,255,255,0.7);
+            padding: 8px; cursor: pointer; border-radius: 6px; font-family: inherit;
+            font-size: 0.9em; transition: 0.2s;
         }
+        .tab-btn.active { background: white; color: var(--primary); font-weight: bold; }
 
-        .tab-btn:hover { background: rgba(255,255,255,0.1); }
-        .tab-btn.active {
-            background: white;
-            color: var(--primary);
-            font-weight: bold;
-        }
+        .course-list { flex-grow: 1; overflow-y: auto; padding: 10px; scrollbar-width: thin; }
 
-        .course-list {
-            flex-grow: 1;
-            overflow-y: auto;
-            padding: 15px;
-            scrollbar-width: thin;
-        }
-
-        /* --- ACCORDION --- */
+        /* --- ACCORDION & CHECKBOX UI --- */
         .course-group { 
-            margin-bottom: 12px; 
-            border: 1px solid var(--border); 
-            border-radius: 12px; 
-            background: white;
-            overflow: hidden;
+            margin-bottom: 10px; border: 1px solid var(--border); 
+            border-radius: 12px; background: white; overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .course-group.selected-course {
+            border-color: var(--accent);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            background: #fbfdff;
+            order: -1; /* Move checked courses to top */
         }
 
         .accordion-header {
-            padding: 12px 15px;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #fff;
-            font-weight: bold;
-            font-size: 0.95em;
-            transition: background 0.2s;
+            padding: 12px 15px; display: flex; justify-content: space-between; align-items: center;
+            cursor: pointer; user-select: none;
+            background: #fff; font-weight: bold; font-size: 0.95em; transition: background 0.2s;
         }
         .accordion-header:hover { background: #f8f9fa; }
-        .accordion-header.active { background: #f1f4f8; border-bottom: 1px solid var(--border); }
         
-        .course-tag {
-            width: 10px; height: 10px; border-radius: 50%; 
-            display: inline-block; margin-left: 10px;
+        .header-main { 
+            display: flex; align-items: center; gap: 12px; flex: 1; 
         }
+        
+        /* Custom Colored Checkbox */
+        .custom-checkbox {
+            width: 20px; height: 20px; border-radius: 6px;
+            border: 2px solid #ddd; display: flex; align-items: center; justify-content: center;
+            transition: 0.2s; flex-shrink: 0; background: white; cursor: pointer;
+        }
+        .custom-checkbox svg { width: 14px; height: 14px; fill: white; opacity: 0; transform: scale(0.5); transition: 0.2s; }
+        
+        .course-group.selected-course .custom-checkbox {
+            background: var(--course-color);
+            border-color: var(--course-color);
+        }
+        .course-group.selected-course .custom-checkbox svg { opacity: 1; transform: scale(1); }
+
+        .header-actions { display: flex; align-items: center; gap: 5px; }
 
         .accordion-body {
             max-height: 0; opacity: 0; overflow: hidden;
-            transition: max-height 0.4s ease, opacity 0.3s ease;
-            background: #fafafa;
+            transition: max-height 0.3s ease, opacity 0.3s ease;
+            background: #fafafa; border-top: 1px solid #eee;
         }
         .accordion-body.open { max-height: 2000px; opacity: 1; padding: 10px; }
 
+        /* Prof Radio Cards */
         .prof-grid { display: grid; gap: 6px; }
-        
-        .prof-option { position: relative; cursor: pointer; }
+        .prof-option { position: relative; cursor: pointer; display: block; }
         .prof-option input { position: absolute; opacity: 0; width: 0; height: 0; }
         
         .prof-card {
             display: flex; justify-content: space-between; align-items: center;
-            padding: 10px;
-            background: white; border: 2px solid transparent;
+            padding: 10px; background: white; border: 2px solid transparent;
             border-radius: 8px; font-size: 0.85em; color: #555;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            transition: all 0.2s;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05); transition: all 0.2s;
         }
-        .prof-card:hover { transform: translateX(-2px); border-color: #d6eaf8; }
+        .prof-card:hover { border-color: #d6eaf8; }
         
         .prof-option input:checked + .prof-card {
-            background: var(--accent); color: white;
-            border-color: var(--accent);
+            background: var(--accent); color: white; border-color: var(--accent);
             box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
         }
 
         .sidebar-footer {
-            padding: 15px;
-            border-top: 1px solid var(--border);
-            background: #fafafa;
+            padding: 15px; border-top: 1px solid var(--border); background: #fafafa; display: flex; gap: 10px;
         }
-        .reset-btn {
-            width: 100%; padding: 10px; background: white;
-            border: 1px solid var(--danger); color: var(--danger);
-            border-radius: 8px; cursor: pointer; font-family: inherit;
-            transition: 0.2s;
+        .btn-block {
+            flex: 1; padding: 12px; border-radius: 8px; cursor: pointer; font-family: inherit; border: none; font-weight: bold;
         }
-        .reset-btn:hover { background: var(--danger); color: white; }
+        .reset-btn { background: #fff; border: 1px solid var(--danger); color: var(--danger); }
+        .add-course-btn { background: var(--primary); color: white; }
 
         /* --- SCHEDULE --- */
         .schedule { 
-            flex-grow: 1; 
-            background: var(--card-bg); 
-            border-radius: 16px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05); 
-            overflow: hidden; 
-            border: 1px solid white;
-            display: flex;
-            flex-direction: column;
-            position: relative;
+            flex-grow: 1; background: var(--card-bg); border-radius: 16px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05); overflow: hidden; 
+            border: 1px solid white; display: flex; flex-direction: column; position: relative;
         }
 
-        .schedule-scroll {
-            overflow-y: auto; height: 100%; position: relative; scrollbar-width: thin;
-        }
+        .schedule-scroll { overflow-y: auto; height: 100%; position: relative; scrollbar-width: thin; }
 
         .day-header { 
             display: flex; position: sticky; top: 0; z-index: 100;
@@ -266,14 +207,9 @@
             flex: 1; text-align: center; padding: 15px 0; 
             font-weight: bold; color: #555; border-left: 1px solid #eee;
         }
-        
-        .day-col .desktop-text { display: inline; }
-        .day-col .mobile-text { display: none; }
-
         .time-header-spacer { width: 50px; border-left: 2px solid var(--border); background: #fafafa; }
-
-        .grid-container { display: flex; position: relative; }
         
+        .grid-container { display: flex; position: relative; }
         .time-labels { 
             width: 50px; background: #fafafa; border-left: 2px solid var(--border);
             flex-shrink: 0; display: flex; flex-direction: column;
@@ -288,41 +224,68 @@
             background: repeating-linear-gradient(to bottom, transparent 0 59px, #eee 59px 60px); 
         }
 
-        /* --- EVENT CARD STYLING --- */
         .event { 
             position: absolute; border-radius: 4px; color: white; 
-            font-size: 0.75em; 
-            display: flex; flex-direction: column; 
-            justify-content: center; align-items: center; 
-            text-align: center; 
-            box-shadow: 0 2px 5px rgba(0,0,0,0.15); 
-            padding: 2px 4px;
-            overflow: hidden; 
-            transition: transform 0.2s, box-shadow 0.2s, opacity 0.3s; 
-            z-index: 10;
-            border-top: 3px solid rgba(255,255,255,0.4);
-            cursor: pointer;
-            white-space: normal;
-            word-wrap: break-word;
-            line-height: 1.2;
-            user-select: none; /* Prevent text selection during long press */
+            font-size: 0.75em; display: flex; flex-direction: column; 
+            justify-content: center; align-items: center; text-align: center; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15); padding: 2px 4px;
+            overflow: hidden; transition: transform 0.2s; z-index: 10;
+            border-top: 3px solid rgba(255,255,255,0.4); cursor: pointer;
+            white-space: normal; word-wrap: break-word; line-height: 1.2; user-select: none;
         }
-        
-        .event:hover { z-index: 50 !important; transform: scale(1.03); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
-        .event strong { display: block; font-size: 1.05em; margin-bottom: 2px; }
-        .event-time { font-size: 0.9em; opacity: 0.9; margin-bottom: 2px; }
-        .event-prof { font-size: 0.85em; opacity: 0.95; }
+        .event:hover { z-index: 50 !important; transform: scale(1.03); }
 
+        /* Colors */
         .c-sp-1 { background: #e74c3c; } .c-sp-2 { background: #e67e22; }
         .c-sp-3 { background: #f1c40f; color: #333 !important; } .c-sp-4 { background: #2ecc71; }
         .c-sp-5 { background: #1abc9c; } .c-sp-6 { background: #3498db; }
         .c-sp-7 { background: #9b59b6; } .c-sp-8 { background: #34495e; }
         .c-gen { background: #95a5a6; }
+        .conflict-overlap { opacity: 0.9; box-shadow: 0 0 0 2px #fff; }
+
+        /* --- MODAL --- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5); z-index: 1000;
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none; transition: 0.3s;
+        }
+        .modal-overlay.active { opacity: 1; pointer-events: all; }
         
-        .conflict-overlap { opacity: 0.9; box-shadow: 0 0 0 2px #fff, 0 4px 10px rgba(0,0,0,0.2); }
+        .modal-box {
+            background: white; width: 95%; max-width: 600px;
+            border-radius: 12px; padding: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            transform: translateY(20px); transition: 0.3s;
+            max-height: 90vh; overflow-y: auto; display: flex; flex-direction: column;
+        }
+        .modal-overlay.active .modal-box { transform: translateY(0); }
+        
+        .modal-header { display: flex; justify-content: space-between; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .modal-title { margin: 0; color: var(--primary); }
+        
+        .form-group { margin-bottom: 15px; }
+        .form-label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.9em; }
+        .form-input, .form-select {
+            width: 100%; padding: 10px; border: 1px solid #ddd;
+            border-radius: 6px; font-family: inherit;
+        }
+        
+        .dynamic-list-container { border: 1px solid #eee; border-radius: 8px; padding: 10px; background: #fafafa; margin-bottom: 10px; }
+        .prof-entry-card { background: white; padding: 15px; border-radius: 8px; border: 1px solid #ddd; margin-bottom: 10px; position: relative; }
+        .prof-header { display: flex; justify-content: space-between; margin-bottom: 10px; align-items: center; }
+        .time-slot-row { display: flex; gap: 5px; margin-bottom: 5px; align-items: center; }
+        
+        .btn { padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer; font-family: inherit; font-weight: bold; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-secondary { background: #ecf0f1; color: #333; }
+        .btn-cancel { background: #eee; color: #555; }
+        .btn-danger { background: #fee; color: var(--danger); }
+        .btn-sm { padding: 4px 8px; font-size: 0.85em; }
 
         .desktop-only { display: inline; }
-        
+        .mobile-text { display: none; }
+
         @media (max-width: 900px) {
             body { height: auto; overflow: auto; padding: 10px; }
             .container { flex-direction: column-reverse; height: auto; gap: 10px; }
@@ -334,10 +297,6 @@
             .day-col .desktop-text { display: none; }
             .day-col .mobile-text { display: inline; }
             .day-col { padding: 10px 0; font-size: 0.9em; }
-            .event { padding: 2px; line-height: 1.1; }
-            .event strong { font-size: 0.75em; margin-bottom: 1px; }
-            .event-prof { font-size: 0.65em; }
-            .event-time { font-size: 0.7em; margin-bottom: 1px; font-weight: bold; background: rgba(0,0,0,0.1); padding: 0 3px; border-radius: 3px; }
             .desktop-only { display: none; }
         }
     </style>
@@ -347,19 +306,22 @@
 <div class="container">
     <div class="controls">
         <div class="sidebar-header">
-            <div class="header-top"><h3>انتخاب واحد مکانیک</h3></div>
+            <div class="header-top">
+                <h3>انتخاب واحد مکانیک</h3>
+            </div>
             <div class="plan-tabs-wrapper" id="planTabsContainer">
-                <button class="add-plan-btn" onclick="addNewPlan()" title="ایجاد برنامه جدید">+</button>
+                <button class="add-btn-circle" onclick="addNewPlan()" title="ایجاد برنامه جدید">+</button>
             </div>
             <input type="text" id="searchInput" class="search-box" placeholder="جستجو..." onkeyup="renderCourseList()">
             <div class="tabs">
-                <button class="tab-btn active" onclick="setTab('specialized')">تخصصی (9)</button>
-                <button class="tab-btn" onclick="setTab('general')">عمومی (11)</button>
+                <button class="tab-btn active" onclick="setTab('specialized')">تخصصی</button>
+                <button class="tab-btn" onclick="setTab('general')">عمومی</button>
             </div>
         </div>
         <div class="course-list" id="accordion-container"></div>
         <div class="sidebar-footer">
-            <button class="reset-btn" onclick="deleteCurrentPlan()">حذف این برنامه</button>
+            <button class="btn-block add-course-btn" onclick="openAddModal()">+ افزودن درس جدید</button>
+            <button class="btn-block reset-btn" onclick="deleteCurrentPlan()">حذف برنامه</button>
         </div>
     </div>
 
@@ -385,36 +347,64 @@
     </div>
 </div>
 
+<div class="modal-overlay" id="editModal">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h3 class="modal-title">ویرایش درس</h3>
+            <button class="icon-btn" onclick="closeModal('editModal')">✕</button>
+        </div>
+        <div id="editModalContent"></div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="addModal">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h3 class="modal-title">افزودن درس سفارشی</h3>
+            <button class="icon-btn" onclick="closeModal('addModal')">✕</button>
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">نام درس</label>
+            <input type="text" id="ncName" class="form-input" placeholder="مثلا: فیزیک ۲">
+        </div>
+        <div class="form-group">
+            <label class="form-label">دسته بندی</label>
+            <select id="ncCat" class="form-select">
+                <option value="specialized">تخصصی</option>
+                <option value="general">عمومی</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">اساتید / گروه‌ها</label>
+            <div id="ncProfsContainer" class="dynamic-list-container"></div>
+            <button class="btn btn-secondary btn-sm" onclick="addProfField()" style="width:100%">+ افزودن استاد</button>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn btn-cancel" onclick="closeModal('addModal')">انصراف</button>
+            <button class="btn btn-primary" onclick="submitNewCourse()">ثبت درس</button>
+        </div>
+    </div>
+</div>
+
 <script>
     const START_HOUR = 7; 
     const END_HOUR = 18;  
     const PX_PER_HOUR = 60;
-    const STORAGE_KEY = 'course_selections_v6_multi';
+    const STORAGE_KEY = 'course_planner_v9';
+    const COURSE_DATA_KEY = 'course_data_v9';
 
-    const shortNames = {
-        'ارتعاشات مکانیکی': 'ارتعاشات',
-        'ترمودینامیک ۱': 'ترمو۱',
-        'طراحی اجزاء ماشین 1': 'اجزا۱',
-        'مکانیک سیالات ۱': 'سیالات۱',
-        'آزمایشگاه مکانیک مواد': 'آز مواد',
-        'آمار و احتمال مهندسی': 'آمار',
-        'مبانی مدارهای الکتریکی': 'مدار',
-        'مکانیک مواد ۲': 'مقاومت۲',
-        'برنامه سازی پیشرفته': 'برنامه‌سازی',
-        'اندیشه اسلامی ۱': 'اندیشه۱',
-        'اندیشه اسلامی ۲': 'اندیشه۲',
-        'انقلاب اسلامی': 'انقلاب',
-        'دانش خانواده': 'خانواده',
-        'تربیت بدنی (پسران)': 'تربیت‌بدنی',
-        'تربیت بدنی (دختران)': 'تربیت‌بدنی',
-        'ورزش ۱ (پسران)': 'ورزش۱',
-        'ورزش ۱ (دختران)': 'ورزش۱',
-        'تاریخ تحلیلی صدر اسلام': 'تاریخ‌اسلام',
-        'سواد مالی': 'سوادمالی',
-        'شناخت محیط زیست': 'محیط‌زیست'
+    const icons = {
+        pencil: '<svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>',
+        trash: '<svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>',
+        check: '<svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>'
     };
 
-    const rawData = [
+    const shortNames = { 'ارتعاشات مکانیکی': 'ارتعاشات', 'ترمودینامیک ۱': 'ترمو۱', 'طراحی اجزاء ماشین 1': 'اجزا۱', 'مکانیک سیالات ۱': 'سیالات۱', 'آزمایشگاه مکانیک مواد': 'آز مواد', 'آمار و احتمال مهندسی': 'آمار', 'مبانی مدارهای الکتریکی': 'مدار', 'مکانیک مواد ۲': 'مقاومت۲', 'برنامه سازی پیشرفته': 'برنامه‌سازی', 'اندیشه اسلامی ۱': 'اندیشه۱', 'اندیشه اسلامی ۲': 'اندیشه۲', 'انقلاب اسلامی': 'انقلاب', 'دانش خانواده': 'خانواده' };
+
+    const defaultCourses = [
         { id: '8106007', t: 'ارتعاشات مکانیکی', c: 'specialized', g: [{i: '01', p: 'بهرامی آرش', x: 'مختلط', t: [{d:0,s:10.5,e:12}, {d:2,s:10.5,e:12}]}]},
         { id: '8106090', t: 'ترمودینامیک ۱', c: 'specialized', g: [{i: '02', p: 'کوثری فرشاد', x: 'مختلط', t: [{d:1,s:9,e:10.5}, {d:3,s:9,e:10.5}]}, {i: '03', p: 'افشاری اصغر', x: 'مختلط', t: [{d:1,s:10.5,e:12}, {d:3,s:10.5,e:12}]}]},
         { id: '8106164', t: 'طراحی اجزاء ماشین 1', c: 'specialized', g: [{i: '01', p: 'صفرآبادی مجید', x: 'مختلط', t: [{d:0,s:10.5,e:12}, {d:2,s:10.5,e:12}]}, {i: '02', p: 'عطائی علی اصغر', x: 'مختلط', t: [{d:1,s:9,e:10.5}, {d:3,s:9,e:10.5}]}]},
@@ -430,20 +420,14 @@
         { id: '1120009', t: 'انقلاب اسلامی', c: 'general', g: [{i: '03', p: 'سقای‌بی‌ریا', x: 'زن', t: [{d:4,s:8,e:10}]}, {i: '04', p: 'موسوی سیدرضا', x: 'زن', r: 'r', t: [{d:0,s:8,e:10}]}, {i: '05', p: 'موسوی سیدرضا', x: 'مرد', r: 'r', t: [{d:0,s:10,e:12}]}, {i: '06', p: 'موسوی سیدرضا', x: 'مرد', r: 'r', t: [{d:4,s:8,e:10}]}, {i: '07', p: 'موسوی سیدرضا', x: 'زن', r: 'r', t: [{d:4,s:10,e:12}]}, {i: '08', p: 'اسماعیلی علی', x: 'مرد', r: 'r', t: [{d:4,s:10,e:12}]}, {i: '09', p: 'اسماعیلی علی', x: 'زن', r: 'r', t: [{d:4,s:13,e:15}]}, {i: '10', p: 'واعظی عباس', x: 'زن', t: [{d:2,s:13,e:15}]}, {i: '11', p: 'واعظی عباس', x: 'مرد', t: [{d:2,s:15,e:17}]}, {i: '12', p: 'برخورداری', x: 'مرد', t: [{d:3,s:13,e:15}]}, {i: '16', p: 'کشوردوست', x: 'زن', t: [{d:4,s:7.5,e:9}]}, {i: '17', p: 'برخورداری', x: 'زن', t: [{d:4,s:9,e:10.5}]}, {i: '18', p: 'سلیمانی غلامعلی', x: 'مرد', t: [{d:4,s:13,e:15}]}, {i: '19', p: 'اخضریان', x: 'مرد', t: [{d:4,s:15,e:17}]}, {i: '20', p: 'نصیری رضا', x: 'زن', t: [{d:2,s:10.5,e:12}]}, {i: '21', p: 'نباتیان', x: 'مرد', t: [{d:0,s:10.5,e:12}]}, {i: '22', p: 'نباتیان', x: 'مرد', t: [{d:0,s:13,e:15}]}, {i: '23', p: 'محمدزاده حسن', x: 'مرد', t: [{d:0,s:15,e:17}]}, {i: '30', p: 'سقای‌بی‌ریا', x: 'زن', t: [{d:1,s:8,e:10}]}, {i: '31', p: 'سقای‌بی‌ریا', x: 'زن', t: [{d:1,s:10,e:12}]}]},
         { id: '1120019', t: 'دانش خانواده', c: 'general', g: [{i: '03', p: 'ملکی ندا', x: 'زن', t: [{d:0,s:8,e:10}]}, {i: '04', p: 'ملکی ندا', x: 'زن', t: [{d:0,s:10,e:12}]}, {i: '05', p: 'شعربافچی', x: 'زن', r: 'g', t: [{d:4,s:8,e:10}]}, {i: '06', p: 'شعربافچی', x: 'زن', r: 'g', t: [{d:4,s:10,e:12}]}, {i: '07', p: 'خسروشاهی', x: 'زن', t: [{d:3,s:8,e:10}]}, {i: '08', p: 'شریفی محمد', x: 'مرد', t: [{d:4,s:13,e:15}]}, {i: '09', p: 'محمدزاده', x: 'زن', r: 'g', t: [{d:1,s:13,e:15}]}, {i: '10', p: 'بهاری', x: 'مرد', r: 'g', t: [{d:1,s:15,e:17}]}, {i: '11', p: 'ریحانی سعید', x: 'مرد', r: 'g', t: [{d:4,s:8,e:10}]}, {i: '12', p: 'ریحانی سعید', x: 'مرد', r: 'g', t: [{d:4,s:10,e:12}]}, {i: '13', p: 'نیاز آزاده', x: 'زن', r: 'g', t: [{d:4,s:8,e:10}]}, {i: '14', p: 'نیاز آزاده', x: 'زن', r: 'g', t: [{d:4,s:10,e:12}]}, {i: '19', p: 'مرادی منصور', x: 'مرد', r: 'y', t: [{d:4,s:8,e:10}]}, {i: '20', p: 'مرادی منصور', x: 'مرد', r: 'y', t: [{d:4,s:10,e:12}]}, {i: '21', p: 'ریحانی سعید', x: 'مرد', r: 'g', t: [{d:3,s:8,e:10}]}, {i: '22', p: 'ریحانی سعید', x: 'مرد', r: 'g', t: [{d:3,s:10,e:12}]}, {i: '23', p: 'گروه آموزشی', x: 'مرد', t: [{d:0,s:13,e:15}]}, {i: '24', p: 'گروه آموزشی', x: 'مرد', t: [{d:0,s:15,e:17}]}, {i: '25', p: 'ملکی ندا', x: 'زن', t: [{d:1,s:8,e:10}]}, {i: '26', p: 'ملکی ندا', x: 'زن', t: [{d:1,s:10,e:12}]}]},
         { id: '1120020', t: 'تربیت بدنی (پسران)', c: 'general', g: [{i: '01', p: 'کیانی خسرو', x: 'مرد', t: [{d:0,s:8,e:10}]}, {i: '02', p: 'مومنی‌فر', x: 'مرد', t: [{d:0,s:10,e:12}]}, {i: '03', p: 'سنجری محمد', x: 'مرد', t: [{d:0,s:13,e:15}]}, {i: '05', p: 'حسینی روح‌الله', x: 'مرد', t: [{d:1,s:8,e:10}]}, {i: '07', p: 'تکلو نیما', x: 'مرد', t: [{d:1,s:13,e:15}]}, {i: '08', p: 'تکلو نیما', x: 'مرد', t: [{d:1,s:15,e:17}]}, {i: '09', p: 'حسینی/امینانی', x: 'مرد', t: [{d:2,s:8,e:10}]}, {i: '10', p: 'امینانی', x: 'مرد', t: [{d:2,s:10,e:12}]}, {i: '11', p: 'رحیم‌زاده', x: 'مرد', t: [{d:2,s:13,e:15}]}, {i: '12', p: 'کردی حسن', x: 'مرد', t: [{d:2,s:15,e:17}]}, {i: '13', p: 'محمودی احمد', x: 'مرد', t: [{d:3,s:8,e:10}]}, {i: '14', p: 'زیویار فرزاد', x: 'مرد', t: [{d:3,s:10,e:12}]}, {i: '15', p: 'محبی محمود', x: 'مرد', t: [{d:3,s:13,e:15}]}, {i: '16', p: 'محبی محمود', x: 'مرد', t: [{d:3,s:15,e:17}]}, {i: '17', p: 'کیانی خسرو', x: 'مرد', t: [{d:4,s:8,e:10}]}, {i: '18', p: 'زیویار فرزاد', x: 'مرد', t: [{d:4,s:10,e:12}]}, {i: '19', p: 'زیویار فرزاد', x: 'مرد', t: [{d:4,s:13,e:15}]}, {i: '20', p: 'فلاحی زانیار', x: 'مرد', t: [{d:4,s:15,e:17}]}]},
-        { id: '1120021', t: 'ورزش ۱ (پسران)', c: 'general', g: [{i: '01', p: 'کردی حسن', x: 'مرد', t: [{d:0,s:8,e:10}]}, {i: '02', p: 'ذوقی', x: 'مرد', t: [{d:0,s:10,e:12}]}, {i: '03', p: 'ذوقی', x: 'مرد', t: [{d:0,s:13,e:15}]}, {i: '04', p: 'کردی حسن', x: 'مرد', t: [{d:0,s:15,e:17}]}, {i: '05', p: 'بختیاری', x: 'مرد', t: [{d:1,s:8,e:10}]}, {i: '06', p: 'بختیاری', x: 'مرد', t: [{d:1,s:10,e:12}]}]},
-        { id: '1120030', t: 'تاریخ تحلیلی صدر اسلام', c: 'general', g: [{i: '01', p: 'صادقی مهسا', x: 'مختلط', t: [{d:0,s:16,e:18}]}, {i: '03', p: 'صادقی مهسا', x: 'مختلط', t: [{d:0,s:10,e:12}]}]},
-        { id: '1120034', t: 'سواد مالی', c: 'general', g: [{i: '01', p: 'نظری محسن', x: 'مختلط', t: [{d:0,s:16,e:18}]}, {i: '02', p: 'صادقی مهسا', x: 'مختلط', t: [{d:0,s:16,e:18}]}]},
-        { id: '1120035', t: 'شناخت محیط زیست', c: 'general', g: [{i: '01', p: 'شهریاری تکتم', x: 'مختلط', r: 'g', t: [{d:3,s:8,e:10}]}, {i: '02', p: 'زبردست لعبت', x: 'مختلط', t: [{d:3,s:10,e:12}]}]}
+        { id: '1120021', t: 'ورزش ۱ (پسران)', c: 'general', g: [{i: '01', p: 'کردی حسن', x: 'مرد', t: [{d:0,s:8,e:10}]}, {i: '02', p: 'ذوقی', x: 'مرد', t: [{d:0,s:10,e:12}]}, {i: '03', p: 'ذوقی', x: 'مرد', t: [{d:0,s:13,e:15}]}, {i: '04', p: 'کردی حسن', x: 'مرد', t: [{d:0,s:15,e:17}]}, {i: '05', p: 'بختیاری', x: 'مرد', t: [{d:1,s:8,e:10}]}, {i: '06', p: 'بختیاری', x: 'مرد', t: [{d:1,s:10,e:12}]}]}
     ];
 
-    const courses = rawData.map((c, i) => {
-        c.color = c.c === 'specialized' ? `c-sp-${(i % 8) + 1}` : 'c-gen';
-        return c;
-    });
-
+    let courses = [];
     let currentTab = 'specialized';
-    let plans = [{ id: 0, selections: {} }];
+    let plans = [{ id: 0, selections: {}, checked: {} }]; // Added checked state
     let activePlanIndex = 0;
+    let tempNewCourse = { profs: [] };
 
     function initGrid() {
         const timeLabelsContainer = document.getElementById('timeLabels');
@@ -459,18 +443,27 @@
     }
 
     function loadState() {
+        const savedCourses = localStorage.getItem(COURSE_DATA_KEY);
+        if (savedCourses) courses = JSON.parse(savedCourses);
+        else courses = JSON.parse(JSON.stringify(defaultCourses));
+
+        courses.forEach((c, i) => {
+            if(!c.color) c.color = c.c === 'specialized' ? `c-sp-${(i % 8) + 1}` : 'c-gen';
+        });
+
         const data = localStorage.getItem(STORAGE_KEY);
         if (data) {
             const parsed = JSON.parse(data);
-            plans = parsed.plans || [{ id: 0, selections: {} }];
+            plans = parsed.plans || [{ id: 0, selections: {}, checked: {} }];
             activePlanIndex = parsed.activePlanIndex || 0;
+            // Migration: Ensure checked object exists
+            plans.forEach(p => { if(!p.checked) p.checked = {}; });
         }
         renderPlanTabs();
     }
 
-    function saveState() {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify({ plans, activePlanIndex }));
-    }
+    function saveState() { localStorage.setItem(STORAGE_KEY, JSON.stringify({ plans, activePlanIndex })); }
+    function saveCourses() { localStorage.setItem(COURSE_DATA_KEY, JSON.stringify(courses)); renderCourseList(); renderSchedule(); }
 
     function renderPlanTabs() {
         const container = document.getElementById('planTabsContainer');
@@ -493,7 +486,7 @@
     }
 
     function addNewPlan() {
-        plans.push({ id: plans.length, selections: {} });
+        plans.push({ id: plans.length, selections: {}, checked: {} });
         activePlanIndex = plans.length - 1;
         saveState();
         renderPlanTabs();
@@ -503,13 +496,14 @@
 
     function deleteCurrentPlan() {
         if (plans.length === 1) {
-            if(confirm('همه انتخاب‌های این برنامه پاک شود؟')) {
-                plans[0].selections = {};
-                saveState(); renderCourseList(); renderSchedule();
+            if(confirm('پاکسازی برنامه؟')) { 
+                plans[0].selections = {}; 
+                plans[0].checked = {}; // clear checked too
+                saveState(); renderCourseList(); renderSchedule(); 
             }
             return;
         }
-        if(confirm('این برنامه حذف شود؟')) {
+        if(confirm('حذف این برنامه؟')) {
             plans.splice(activePlanIndex, 1);
             activePlanIndex = Math.max(0, activePlanIndex - 1);
             plans.forEach((p, i) => p.id = i);
@@ -527,53 +521,253 @@
         const query = document.getElementById('searchInput').value.trim();
         const container = document.getElementById('accordion-container');
         container.innerHTML = '';
-        const visible = courses.filter(c => c.c === currentTab && (c.t.includes(query) || c.id.includes(query) || c.g.some(g => g.p.includes(query))));
+        const currentSelections = plans[activePlanIndex].selections;
+        const currentChecked = plans[activePlanIndex].checked;
+
+        let visible = courses.filter(c => c.c === currentTab && (c.t.includes(query) || c.id.includes(query) || c.g.some(g => g.p.includes(query))));
+
+        // SORT: Checked courses first
+        visible.sort((a, b) => {
+            const isCheckedA = currentChecked[a.id];
+            const isCheckedB = currentChecked[b.id];
+            if (isCheckedA && !isCheckedB) return -1;
+            if (!isCheckedA && isCheckedB) return 1;
+            return 0;
+        });
 
         visible.forEach(c => {
             const item = document.createElement('div');
-            item.className = 'course-group';
-            const selection = plans[activePlanIndex].selections[c.id] || 'none';
-            let html = `<div class="accordion-header" onclick="toggleAccordion(this)"><span><span class="course-tag ${c.color}"></span>${c.t}</span><span style="font-size:0.8em; background:#eee; padding:2px 6px; border-radius:4px">${c.g.length} گروه</span></div><div class="accordion-body"><div class="prof-grid">
-                <label class="prof-option"><input type="radio" name="${c.id}" value="none" ${selection === 'none' ? 'checked' : ''} onchange="handleSelection('${c.id}', 'none')"><span class="prof-card"><span>انتخاب نشده</span></span></label>`;
+            const selection = currentSelections[c.id] || 'none';
+            const isChecked = currentChecked[c.id] || false;
+            
+            item.className = `course-group ${isChecked ? 'selected-course' : ''}`;
+            item.style.setProperty('--course-color', getComputedStyle(document.documentElement).getPropertyValue(getCssVarName(c.color)) || getHexColor(c.color));
+
+            const checkedHtml = isChecked ? icons.check : '';
+            
+            let html = `
+            <div class="accordion-header" onclick="toggleAccordion(this)">
+                <div class="header-main">
+                    <div class="custom-checkbox" onclick="toggleCourseCheck(event, '${c.id}')">${checkedHtml}</div>
+                    <span>${c.t}</span>
+                </div>
+                <div class="header-actions">
+                    <span style="font-size:0.8em; background:#eee; padding:2px 6px; border-radius:4px">${c.g.length}</span>
+                    <button class="icon-btn" onclick="openEditModal('${c.id}')">${icons.pencil}</button>
+                </div>
+            </div>
+            <div class="accordion-body">
+                <div class="prof-grid">
+                    <label class="prof-option">
+                        <input type="radio" name="${c.id}" value="none" ${selection === 'none' ? 'checked' : ''} onchange="handleSelection('${c.id}', 'none')">
+                        <span class="prof-card"><span>انتخاب نشده</span></span>
+                    </label>`;
+            
             c.g.forEach(g => {
-                html += `<label class="prof-option"><input type="radio" name="${c.id}" value="${g.i}" ${selection === g.i ? 'checked' : ''} onchange="handleSelection('${c.id}', '${g.i}')"><span class="prof-card"><span>${g.r ? `<span class="rank-dot rank-${g.r}"></span>` : ''}${g.p}</span><span class="gender-badge">${g.x}</span></span></label>`;
+                // RESTORED INDICATOR: g.r
+                html += `<label class="prof-option">
+                    <input type="radio" name="${c.id}" value="${g.i}" ${selection === g.i ? 'checked' : ''} onchange="handleSelection('${c.id}', '${g.i}')">
+                    <span class="prof-card">
+                        <span>${g.p}${g.r ? `<span class="rank-dot rank-${g.r}"></span>` : ''}</span>
+                        ${g.x ? `<span style="font-size:0.8em; opacity:0.7">${g.x}</span>` : ''}
+                    </span>
+                </label>`;
             });
+
             item.innerHTML = html + `</div></div>`;
             container.appendChild(item);
         });
     }
+
+    function getCssVarName(className) {
+        const map = {
+            'c-sp-1': '#e74c3c', 'c-sp-2': '#e67e22', 'c-sp-3': '#f1c40f', 'c-sp-4': '#2ecc71',
+            'c-sp-5': '#1abc9c', 'c-sp-6': '#3498db', 'c-sp-7': '#9b59b6', 'c-sp-8': '#34495e',
+            'c-gen': '#95a5a6'
+        };
+        return map[className] || '#333';
+    }
+    function getHexColor(className) { return getCssVarName(className); }
 
     function toggleAccordion(header) {
         header.classList.toggle('active');
         header.nextElementSibling.classList.toggle('open');
     }
 
+    function toggleCourseCheck(e, courseId) {
+        e.stopPropagation();
+        const currentChecked = plans[activePlanIndex].checked;
+        if (currentChecked[courseId]) {
+            // Uncheck
+            delete currentChecked[courseId];
+        } else {
+            // Check (Pin)
+            currentChecked[courseId] = true;
+        }
+        saveState();
+        renderCourseList();
+    }
+
     function handleSelection(courseId, groupId) {
+        if (groupId !== 'none') {
+            // Selecting a prof -> Auto Check the course
+            plans[activePlanIndex].checked[courseId] = true;
+        }
+        // NOTE: If groupId IS 'none' (deletion), we do NOT uncheck the course logic here.
+        
         plans[activePlanIndex].selections[courseId] = groupId;
         saveState();
+        renderCourseList();
         renderSchedule();
     }
 
-    // --- NEW: INTERACTION HANDLER FOR DELETION ---
-    function attachDeletionListeners(el, courseId) {
-        // Desktop: Double Click
-        el.addEventListener('dblclick', () => {
-            handleSelection(courseId, 'none');
-            renderCourseList();
+    // --- ADD COURSE LOGIC ---
+    function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+    
+    function openAddModal() {
+        tempNewCourse = { profs: [{ id: Date.now(), name: '', times: [{day: 0, start: 8, end: 10}] }] };
+        renderAddModalContent();
+        document.getElementById('ncName').value = '';
+        document.getElementById('addModal').classList.add('active');
+    }
+
+    function renderAddModalContent() {
+        const container = document.getElementById('ncProfsContainer');
+        container.innerHTML = '';
+        
+        tempNewCourse.profs.forEach((prof, pIdx) => {
+            const pDiv = document.createElement('div');
+            pDiv.className = 'prof-entry-card';
+            
+            let html = `
+                <div class="prof-header">
+                    <input type="text" class="form-input" placeholder="نام استاد" 
+                           value="${prof.name}" oninput="updateProfName(${pIdx}, this.value)" style="width:70%">
+                    ${tempNewCourse.profs.length > 1 ? `<button class="btn btn-sm btn-danger" onclick="removeProfField(${pIdx})">حذف</button>` : ''}
+                </div>
+                <div style="font-size:0.85em; margin-bottom:5px; color:#666">زمان‌های کلاس:</div>
+            `;
+            
+            prof.times.forEach((t, tIdx) => {
+                html += `
+                    <div class="time-slot-row">
+                        <select class="form-select" onchange="updateTime(${pIdx}, ${tIdx}, 'day', this.value)" style="flex:1">
+                            <option value="0" ${t.day==0?'selected':''}>شنبه</option>
+                            <option value="1" ${t.day==1?'selected':''}>یک‌شنبه</option>
+                            <option value="2" ${t.day==2?'selected':''}>دوشنبه</option>
+                            <option value="3" ${t.day==3?'selected':''}>سه‌شنبه</option>
+                            <option value="4" ${t.day==4?'selected':''}>چهارشنبه</option>
+                        </select>
+                        <input type="number" class="form-input" value="${t.start}" onchange="updateTime(${pIdx}, ${tIdx}, 'start', this.value)" style="width:60px" placeholder="شروع">
+                        <input type="number" class="form-input" value="${t.end}" onchange="updateTime(${pIdx}, ${tIdx}, 'end', this.value)" style="width:60px" placeholder="پایان">
+                        <button class="icon-btn btn-sm-danger" onclick="removeTimeField(${pIdx}, ${tIdx})">${icons.trash}</button>
+                    </div>
+                `;
+            });
+            
+            html += `<button class="btn btn-secondary btn-sm" onclick="addTimeField(${pIdx})" style="margin-top:5px; width:100%">+ زمان دیگر</button>`;
+            pDiv.innerHTML = html;
+            container.appendChild(pDiv);
         });
+    }
 
-        // Mobile: Tap and Hold (Long Press)
-        let timer;
-        const start = () => {
-            timer = setTimeout(() => {
-                if(confirm("این درس حذف شود؟")) {
-                    handleSelection(courseId, 'none');
-                    renderCourseList();
-                }
-            }, 700);
+    function addProfField() {
+        tempNewCourse.profs.push({ id: Date.now(), name: '', times: [{day: 0, start: 8, end: 10}] });
+        renderAddModalContent();
+    }
+    function removeProfField(idx) {
+        tempNewCourse.profs.splice(idx, 1);
+        renderAddModalContent();
+    }
+    function updateProfName(idx, val) { tempNewCourse.profs[idx].name = val; }
+    
+    function addTimeField(pIdx) {
+        tempNewCourse.profs[pIdx].times.push({day: 0, start: 8, end: 10});
+        renderAddModalContent();
+    }
+    function removeTimeField(pIdx, tIdx) {
+        if(tempNewCourse.profs[pIdx].times.length === 1) return alert('حداقل یک زمان لازم است');
+        tempNewCourse.profs[pIdx].times.splice(tIdx, 1);
+        renderAddModalContent();
+    }
+    function updateTime(pIdx, tIdx, field, val) {
+        tempNewCourse.profs[pIdx].times[tIdx][field] = parseFloat(val);
+    }
+
+    function submitNewCourse() {
+        const name = document.getElementById('ncName').value.trim();
+        const cat = document.getElementById('ncCat').value;
+        if(!name) return alert("نام درس الزامی است");
+        
+        const validProfs = tempNewCourse.profs.filter(p => p.name.trim() !== '');
+        if(validProfs.length === 0) return alert("حداقل نام یک استاد را وارد کنید");
+
+        const newGroups = validProfs.map((p, idx) => ({
+            i: 'C' + Date.now() + idx,
+            p: p.name,
+            x: 'نامشخص',
+            t: p.times.map(t => ({d: t.day, s: t.start, e: t.end}))
+        }));
+
+        const newCourse = {
+            id: 'C-' + Date.now(),
+            t: name,
+            c: cat,
+            color: cat === 'specialized' ? 'c-sp-8' : 'c-gen',
+            g: newGroups
         };
-        const cancel = () => clearTimeout(timer);
 
+        courses.push(newCourse);
+        saveCourses();
+        closeModal('addModal');
+    }
+
+    // --- EDIT MODAL ---
+    function openEditModal(courseId) {
+        const c = courses.find(x => x.id === courseId);
+        if(!c) return;
+        
+        let html = `<div style="padding: 10px 0;"><strong>${c.t}</strong></div>`;
+        html += `<div class="dynamic-list-container">`;
+        c.g.forEach(g => {
+            html += `<div style="display:flex; justify-content:space-between; padding:8px; border-bottom:1px solid #eee">
+                <span>${g.p}</span>
+                <button class="icon-btn btn-sm-danger" onclick="deleteGroup('${courseId}', '${g.i}')">${icons.trash}</button>
+            </div>`;
+        });
+        html += `</div>`;
+        html += `<div style="margin-top:20px; display:flex; justify-content:space-between">
+            <button class="btn btn-danger" onclick="deleteEntireCourse('${courseId}')">حذف کل درس</button>
+            <button class="btn btn-cancel" onclick="closeModal('editModal')">بستن</button>
+        </div>`;
+        
+        document.getElementById('editModalContent').innerHTML = html;
+        document.getElementById('editModal').classList.add('active');
+    }
+
+    function deleteGroup(courseId, groupId) {
+        if(!confirm('حذف این استاد؟')) return;
+        const c = courses.find(x => x.id === courseId);
+        c.g = c.g.filter(g => g.i !== groupId);
+        plans.forEach(p => { if(p.selections[courseId] === groupId) p.selections[courseId] = 'none'; });
+        saveCourses(); saveState(); openEditModal(courseId);
+    }
+    function deleteEntireCourse(courseId) {
+        if(!confirm('حذف کامل درس؟')) return;
+        plans.forEach(p => { delete p.selections[courseId]; delete p.checked[courseId]; });
+        courses = courses.filter(c => c.id !== courseId);
+        saveCourses(); saveState(); closeModal('editModal');
+    }
+
+    // --- SCHEDULE RENDER & DELETION ---
+    function attachDeletionListeners(el, courseId) {
+        // Double Click -> Unselect
+        el.addEventListener('dblclick', () => { handleSelection(courseId, 'none'); });
+        
+        // Mobile Long Press
+        let timer;
+        const start = () => { timer = setTimeout(() => { if(confirm("حذف درس از برنامه؟")) handleSelection(courseId, 'none'); }, 700); };
+        const cancel = () => clearTimeout(timer);
         el.addEventListener('touchstart', start, {passive: true});
         el.addEventListener('touchend', cancel);
         el.addEventListener('touchmove', cancel);
@@ -613,20 +807,14 @@
             el.style.left = `${ev.left}%`;
             el.innerHTML = `<span class="event-time">${formatTime(ev.start)}${!isMobile ? ' - '+formatTime(ev.end) : ''}</span><strong>${ev.title}</strong><span class="event-prof">${ev.prof}</span>`;
             el.title = isMobile ? "برای حذف نگه دارید" : "برای حذف دوبار کلیک کنید";
-            
             attachDeletionListeners(el, ev.id);
             document.getElementById(`day-${ev.day}`).appendChild(el);
         });
     }
 
-    function formatTime(t) {
-        const h = Math.floor(t), m = Math.round((t-h)*60);
-        return `${h}:${m===0?'00':m}`;
-    }
-
+    function formatTime(t) { const h = Math.floor(t), m = Math.round((t-h)*60); return `${h}:${m===0?'00':m}`; }
     window.addEventListener('resize', renderSchedule); 
     initGrid(); loadState(); renderCourseList(); renderSchedule();
 </script>
 </body>
-
 </html>
