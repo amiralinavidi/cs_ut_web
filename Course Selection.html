@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>دستیار انتخاب واحد مکانیک - نسخه چند برنامه</title>
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/misc/Farsi-Digits/font-face.css" rel="stylesheet" type="text/css" />
+    
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --accent: #2980b9;
+            --bg: #f4f7f6;
+            --card-bg: #ffffff;
+            --border: #e0e0e0;
+            --text: #333;
+            --danger: #e74c3c;
+            --success: #27ae60;
+            --tab-inactive: #ecf0f1;
+        }
+
+        * { box-sizing: border-box; }
+
+        body { 
+            font-family: 'B Yekan', 'Vazirmatn', Tahoma, sans-serif; 
+            background: var(--bg); 
+            padding: 20px; 
+            margin: 0;
+            color: var(--text);
+            height: 100vh;
+            overflow: hidden; 
+        }
+
+        .container { 
+            display: flex; 
+            gap: 20px; 
+            height: 95vh; 
+        }
+        
+        /* --- RANK INDICATORS --- */
+        .rank-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+        .rank-g { background: #27ae60; box-shadow: 0 0 5px rgba(39, 174, 96, 0.5); }
+        .rank-y { background: #f1c40f; box-shadow: 0 0 5px rgba(241, 196, 15, 0.5); }
+        .rank-r { background: #e74c3c; box-shadow: 0 0 5px rgba(231, 76, 60, 0.5); }
+
+        /* --- RIGHT SIDEBAR --- */
+        .controls { 
+            width: 420px;
+            min-width: 420px;
+            background: var(--card-bg); 
+            border-radius: 16px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08); 
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid white;
+        }
+
+        .sidebar-header {
+            padding: 15px;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        /* --- PLAN TABS --- */
+        .plan-tabs-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding-bottom: 5px;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        .plan-tabs-wrapper::-webkit-scrollbar { display: none; }
+
+        .plan-tab {
+            background: rgba(255,255,255,0.15);
+            color: rgba(255,255,255,0.8);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 6px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.9em;
+            white-space: nowrap;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .plan-tab:hover { background: rgba(255,255,255,0.25); }
+        .plan-tab.active {
+            background: white;
+            color: var(--primary);
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .add-plan-btn {
+            background: var(--success);
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            cursor: pointer;
+            flex-shrink: 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .add-plan-btn:hover { background: #219150; transform: scale(1.05); }
+
+        .search-box {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            background: rgba(255,255,255,0.15);
+            color: white;
+            font-family: inherit;
+            text-align: center;
+        }
+        .search-box:focus { outline: none; background: rgba(255,255,255,0.25); }
+        .search-box::placeholder { color: rgba(255,255,255,0.7); }
+
+        .tabs {
+            display: flex;
+            background: rgba(0,0,0,0.2);
+            padding: 4px;
+            border-radius: 10px;
+            gap: 5px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: rgba(255,255,255,0.7);
+            padding: 8px;
+            cursor: pointer;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 0.9em;
+            transition: 0.2s;
+        }
+
+        .tab-btn:hover { background: rgba(255,255,255,0.1); }
+        .tab-btn.active {
+            background: white;
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .course-list {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 15px;
+            scrollbar-width: thin;
+        }
+
+        /* --- ACCORDION --- */
+        .course-group { 
+            margin-bottom: 12px; 
+            border: 1px solid var(--border); 
+            border-radius: 12px; 
+            background: white;
+            overflow: hidden;
+        }
+
+        .accordion-header {
+            padding: 12px 15px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fff;
+            font-weight: bold;
+            font-size: 0.95em;
+            transition: background 0.2s;
+        }
+        .accordion-header:hover { background: #f8f9fa; }
+        .accordion-header.active { background: #f1f4f8; border-bottom: 1px solid var(--border); }
+        
+        .course-tag {
+            width: 10px; height: 10px; border-radius: 50%; 
+            display: inline-block; margin-left: 10px;
+        }
+
+        .accordion-body {
+            max-height: 0; opacity: 0; overflow: hidden;
+            transition: max-height 0.4s ease, opacity 0.3s ease;
+            background: #fafafa;
+        }
+        .accordion-body.open { max-height: 2000px; opacity: 1; padding: 10px; }
+
+        .prof-grid { display: grid; gap: 6px; }
+        
+        .prof-option { position: relative; cursor: pointer; }
+        .prof-option input { position: absolute; opacity: 0; width: 0; height: 0; }
+        
+        .prof-card {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px;
+            background: white; border: 2px solid transparent;
+            border-radius: 8px; font-size: 0.85em; color: #555;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            transition: all 0.2s;
+        }
+        .prof-card:hover { transform: translateX(-2px); border-color: #d6eaf8; }
+        
+        .prof-option input:checked + .prof-card {
+            background: var(--accent); color: white;
+            border-color: var(--accent);
+            box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
+        }
+
+        .sidebar-footer {
+            padding: 15px;
+            border-top: 1px solid var(--border);
+            background: #fafafa;
+        }
+        .reset-btn {
+            width: 100%; padding: 10px; background: white;
+            border: 1px solid var(--danger); color: var(--danger);
+            border-radius: 8px; cursor: pointer; font-family: inherit;
+            transition: 0.2s;
+        }
+        .reset-btn:hover { background: var(--danger); color: white; }
+
+        /* --- SCHEDULE --- */
+        .schedule { 
+            flex-grow: 1; 
+            background: var(--card-bg); 
+            border-radius: 16px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05); 
+            overflow: hidden; 
+            border: 1px solid white;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .schedule-scroll {
+            overflow-y: auto; height: 100%; position: relative; scrollbar-width: thin;
+        }
+
+        .day-header { 
+            display: flex; position: sticky; top: 0; z-index: 100;
+            background: #fff; border-bottom: 2px solid var(--border); 
+        }
+        .day-col { 
+            flex: 1; text-align: center; padding: 15px 0; 
+            font-weight: bold; color: #555; border-left: 1px solid #eee;
+        }
+        
+        .day-col .desktop-text { display: inline; }
+        .day-col .mobile-text { display: none; }
+
+        .time-header-spacer { width: 50px; border-left: 2px solid var(--border); background: #fafafa; }
+
+        .grid-container { display: flex; position: relative; }
+        
+        .time-labels { 
+            width: 50px; background: #fafafa; border-left: 2px solid var(--border);
+            flex-shrink: 0; display: flex; flex-direction: column;
+        }
+        .time-label { 
+            height: 60px; display: flex; align-items: start; justify-content: center; 
+            font-size: 0.8em; color: #888; transform: translateY(-10px); 
+        }
+
+        .day-lane { 
+            flex: 1; border-left: 1px solid #f0f0f0; position: relative; 
+            background: repeating-linear-gradient(to bottom, transparent 0 59px, #eee 59px 60px); 
+        }
+
+        /* --- EVENT CARD STYLING --- */
+        .event { 
+            position: absolute; border-radius: 4px; color: white; 
+            font-size: 0.75em; 
+            display: flex; flex-direction: column; 
+            justify-content: center; align-items: center; 
+            text-align: center; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15); 
+            padding: 2px 4px;
+            overflow: hidden; 
+            transition: transform 0.2s, box-shadow 0.2s, opacity 0.3s; 
+            z-index: 10;
+            border-top: 3px solid rgba(255,255,255,0.4);
+            cursor: pointer;
+            white-space: normal;
+            word-wrap: break-word;
+            line-height: 1.2;
+            user-select: none; /* Prevent text selection during long press */
+        }
+        
+        .event:hover { z-index: 50 !important; transform: scale(1.03); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        .event strong { display: block; font-size: 1.05em; margin-bottom: 2px; }
+        .event-time { font-size: 0.9em; opacity: 0.9; margin-bottom: 2px; }
+        .event-prof { font-size: 0.85em; opacity: 0.95; }
+
+        .c-sp-1 { background: #e74c3c; } .c-sp-2 { background: #e67e22; }
+        .c-sp-3 { background: #f1c40f; color: #333 !important; } .c-sp-4 { background: #2ecc71; }
+        .c-sp-5 { background: #1abc9c; } .c-sp-6 { background: #3498db; }
+        .c-sp-7 { background: #9b59b6; } .c-sp-8 { background: #34495e; }
+        .c-gen { background: #95a5a6; }
+        
+        .conflict-overlap { opacity: 0.9; box-shadow: 0 0 0 2px #fff, 0 4px 10px rgba(0,0,0,0.2); }
+
+        .desktop-only { display: inline; }
+        
+        @media (max-width: 900px) {
+            body { height: auto; overflow: auto; padding: 10px; }
+            .container { flex-direction: column-reverse; height: auto; gap: 10px; }
+            .controls { width: 100%; min-width: 0; height: auto; }
+            .course-list { max-height: 400px; }
+            .schedule { width: 100%; height: auto; }
+            .time-header-spacer, .time-labels { width: 30px; }
+            .time-label { font-size: 0.7em; margin-right: -5px; }
+            .day-col .desktop-text { display: none; }
+            .day-col .mobile-text { display: inline; }
+            .day-col { padding: 10px 0; font-size: 0.9em; }
+            .event { padding: 2px; line-height: 1.1; }
+            .event strong { font-size: 0.75em; margin-bottom: 1px; }
+            .event-prof { font-size: 0.65em; }
+            .event-time { font-size: 0.7em; margin-bottom: 1px; font-weight: bold; background: rgba(0,0,0,0.1); padding: 0 3px; border-radius: 3px; }
+            .desktop-only { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="controls">
+        <div class="sidebar-header">
+            <div class="header-top"><h3>انتخاب واحد مکانیک</h3></div>
+            <div class="plan-tabs-wrapper" id="planTabsContainer">
+                <button class="add-plan-btn" onclick="addNewPlan()" title="ایجاد برنامه جدید">+</button>
+            </div>
+            <input type="text" id="searchInput" class="search-box" placeholder="جستجو..." onkeyup="renderCourseList()">
+            <div class="tabs">
+                <button class="tab-btn active" onclick="setTab('specialized')">تخصصی (9)</button>
+                <button class="tab-btn" onclick="setTab('general')">عمومی (11)</button>
+            </div>
+        </div>
+        <div class="course-list" id="accordion-container"></div>
+        <div class="sidebar-footer">
+            <button class="reset-btn" onclick="deleteCurrentPlan()">حذف این برنامه</button>
+        </div>
+    </div>
+
+    <div class="schedule">
+        <div class="schedule-scroll">
+            <div class="day-header">
+                <div class="time-header-spacer"></div>
+                <div class="day-col"><span class="desktop-text">شنبه</span><span class="mobile-text">ش</span></div>
+                <div class="day-col"><span class="desktop-text">یک‌شنبه</span><span class="mobile-text">۱ش</span></div>
+                <div class="day-col"><span class="desktop-text">دوشنبه</span><span class="mobile-text">۲ش</span></div>
+                <div class="day-col"><span class="desktop-text">سه‌شنبه</span><span class="mobile-text">۳ش</span></div>
+                <div class="day-col"><span class="desktop-text">چهارشنبه</span><span class="mobile-text">۴ش</span></div>
+            </div>
+            <div class="grid-container">
+                <div class="time-labels" id="timeLabels"></div>
+                <div class="day-lane" id="day-0"></div> 
+                <div class="day-lane" id="day-1"></div> 
+                <div class="day-lane" id="day-2"></div> 
+                <div class="day-lane" id="day-3"></div> 
+                <div class="day-lane" id="day-4"></div> 
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const START_HOUR = 7; 
+    const END_HOUR = 18;  
+    const PX_PER_HOUR = 60;
+    const STORAGE_KEY = 'course_selections_v6_multi';
+
+    const shortNames = {
+        'ارتعاشات مکانیکی': 'ارتعاشات',
+        'ترمودینامیک ۱': 'ترمو۱',
+        'طراحی اجزاء ماشین 1': 'اجزا۱',
+        'مکانیک سیالات ۱': 'سیالات۱',
+        'آزمایشگاه مکانیک مواد': 'آز مواد',
+        'آمار و احتمال مهندسی': 'آمار',
+        'مبانی مدارهای الکتریکی': 'مدار',
+        'مکانیک مواد ۲': 'مقاومت۲',
+        'برنامه سازی پیشرفته': 'برنامه‌سازی',
+        'اندیشه اسلامی ۱': 'اندیشه۱',
+        'اندیشه اسلامی ۲': 'اندیشه۲',
+        'انقلاب اسلامی': 'انقلاب',
+        'دانش خانواده': 'خانواده',
+        'تربیت بدنی (پسران)': 'تربیت‌بدنی',
+        'تربیت بدنی (دختران)': 'تربیت‌بدنی',
+        'ورزش ۱ (پسران)': 'ورزش۱',
+        'ورزش ۱ (دختران)': 'ورزش۱',
+        'تاریخ تحلیلی صدر اسلام': 'تاریخ‌اسلام',
+        'سواد مالی': 'سوادمالی',
+        'شناخت محیط زیست': 'محیط‌زیست'
+    };
+
+    const rawData = [
+        { id: '8106007', t: 'ارتعاشات مکانیکی', c: 'specialized', g: [{i: '01', p: 'بهرامی آرش', x: 'مختلط', t: [{d:0,s:10.5,e:12}, {d:2,s:10.5,e:12}]}]},
+        { id: '8106090', t: 'ترمودینامیک ۱', c: 'specialized', g: [{i: '02', p: 'کوثری فرشاد', x: 'مختلط', t: [{d:1,s:9,e:10.5}, {d:3,s:9,e:10.5}]}, {i: '03', p: 'افشاری اصغر', x: 'مختلط', t: [{d:1,s:10.5,e:12}, {d:3,s:10.5,e:12}]}]},
+        { id: '8106164', t: 'طراحی اجزاء ماشین 1', c: 'specialized', g: [{i: '01', p: 'صفرآبادی مجید', x: 'مختلط', t: [{d:0,s:10.5,e:12}, {d:2,s:10.5,e:12}]}, {i: '02', p: 'عطائی علی اصغر', x: 'مختلط', t: [{d:1,s:9,e:10.5}, {d:3,s:9,e:10.5}]}]},
+        { id: '8106272', t: 'مکانیک سیالات ۱', c: 'specialized', g: [{i: '01', p: 'صادقی کیوان', x: 'مختلط', t: [{d:0,s:9,e:10.5}, {d:2,s:9,e:10.5}]}, {i: '02', p: 'جلالی علیرضا', x: 'مختلط', t: [{d:0,s:13.5,e:15}, {d:2,s:13.5,e:15}]}, {i: '03', p: 'نجات امیر', x: 'مختلط', t: [{d:1,s:13.5,e:15}, {d:3,s:13.5,e:15}]}]},
+        { id: '8106350', t: 'آزمایشگاه مکانیک مواد', c: 'specialized', g: [{i: '01', p: 'گنجیانی', x: 'مختلط', t: [{d:1,s:15,e:17}]}, {i: '02', p: 'گنجیانی', x: 'مختلط', t: [{d:2,s:13,e:15}]}, {i: '03', p: 'گنجیانی', x: 'مختلط', t: [{d:3,s:15,e:17}]}]},
+        { id: '8106378', t: 'آمار و احتمال مهندسی', c: 'specialized', g: [{i: '01', p: 'حسینیان احسان', x: 'مختلط', t: [{d:0,s:10.5,e:12}, {d:2,s:10.5,e:12}]}, {i: '02', p: 'شکر ایمان', x: 'مختلط', t: [{d:1,s:9,e:10.5}, {d:3,s:9,e:10.5}]}]},
+        { id: '8106483', t: 'مبانی مدارهای الکتریکی', c: 'specialized', g: [{i: '01', p: 'فرج زاده', x: 'مختلط', t: [{d:0,s:7.5,e:9}, {d:2,s:7.5,e:9}]}, {i: '02', p: 'فرج زاده', x: 'مختلط', t: [{d:0,s:9,e:10.5}, {d:2,s:9,e:10.5}]}]},
+        { id: '8106514', t: 'مکانیک مواد ۲', c: 'specialized', g: [{i: '01', p: 'حقیقی یزدی', x: 'مختلط', t: [{d:2,s:15,e:17}]}, {i: '02', p: 'معصومی', x: 'مختلط', t: [{d:1,s:15,e:17}]}]},
+        { id: '8120096', t: 'محاسبات عددی', c: 'specialized', g: [{i: '01', p: 'بیگ‌ پوریان', x: 'مختلط', t: [{d:0,s:10.5,e:12}]}, {i: '02', p: 'فهیم (۱)', x: 'مختلط', t: [{d:1,s:13.5,e:15}]}, {i: '03', p: 'فهیم (۲)', x: 'مختلط', t: [{d:2,s:13.5,e:15}]}, {i: '04', p: 'فاضلی', x: 'مختلط', t: [{d:1,s:15,e:16.5}]}]},
+        { id: '8101119', t: 'برنامه سازی پیشرفته', c: 'specialized', g: [{i: '01', p: 'خسروی رامتین', x: 'مختلط', t: [{d:1,s:10.5,e:12}, {d:3,s:10.5,e:12}, {d:4,s:13.5,e:15}]}]},
+        { id: '1120001', t: 'اندیشه اسلامی ۱', c: 'general', g: [{i: '01', p: 'موسوی فراز', x: 'زن', r: 'y', t: [{d:0,s:10,e:12}]}, {i: '02', p: 'خادمی مهدی', x: 'مرد', t: [{d:0,s:10,e:12}]}, {i: '03', p: 'حسینی مصطفی', x: 'زن', t: [{d:4,s:8,e:10}]}, {i: '04', p: 'حسینی مصطفی', x: 'مرد', t: [{d:4,s:10,e:12}]}, {i: '05', p: 'موسوی‌نسب', x: 'مرد', t: [{d:4,s:8,e:10}]}, {i: '06', p: 'موسوی‌نسب', x: 'زن', t: [{d:4,s:10,e:12}]}, {i: '07', p: 'خادمی مهدی', x: 'زن', t: [{d:0,s:13,e:15}]}, {i: '08', p: 'خادمی مهدی', x: 'مرد', t: [{d:0,s:15,e:17}]}, {i: '09', p: 'خازنی سجاد', x: 'زن', t: [{d:0,s:13,e:15}]}, {i: '10', p: 'خازنی سجاد', x: 'مرد', t: [{d:0,s:15,e:17}]}, {i: '11', p: 'قربانی عباس', x: 'مرد', r: 'r', t: [{d:3,s:7.5,e:9.5}]}, {i: '12', p: 'قربانی عباس', x: 'مرد', r: 'r', t: [{d:3,s:9.5,e:11.5}]}]},
+        { id: '1120002', t: 'اندیشه اسلامی ۲', c: 'general', g: [{i: '04', p: 'موسوی فراز', x: 'زن', r: 'y', t: [{d:4,s:10,e:12}]}, {i: '05', p: 'میر منصور', x: 'زن', r: 'r', t: [{d:4,s:8,e:10}]}, {i: '06', p: 'میر منصور', x: 'مرد', r: 'r', t: [{d:4,s:10,e:12}]}, {i: '07', p: 'واعظی بهروز', x: 'مرد', r: 'r', t: [{d:4,s:13,e:15}]}, {i: '08', p: 'جمال‌زاده', x: 'زن', t: [{d:4,s:15,e:17}]}, {i: '09', p: 'قرنی احسان', x: 'مرد', r: 'g', t: [{d:1,s:8,e:10}]}, {i: '10', p: 'قرنی احسان', x: 'زن', r: 'g', t: [{d:1,s:10,e:12}]}, {i: '11', p: 'فقیهی سیدمجتبی', x: 'مرد', t: [{d:3,s:13.5,e:15}]}, {i: '12', p: 'فقیهی سیدمجتبی', x: 'مرد', t: [{d:3,s:15,e:17}]}, {i: '13', p: 'میر منصور', x: 'زن', r: 'r', t: [{d:3,s:8,e:10}]}, {i: '14', p: 'میر منصور', x: 'مرد', r: 'r', t: [{d:3,s:10,e:12}]}, {i: '15', p: 'گروه آموزشی', x: 'زن', t: [{d:2,s:10,e:12}]}, {i: '16', p: 'دهقانی زهیر', x: 'زن', r: 'g', t: [{d:2,s:13,e:15}]}, {i: '19', p: 'شایسته حسین', x: 'زن', r: 'g', t: [{d:2,s:8,e:10}]}, {i: '20', p: 'شایسته حسین', x: 'مرد', r: 'g', t: [{d:2,s:10,e:12}]}, {i: '21', p: 'قاضوی محمد', x: 'زن', r: 'g', t: [{d:4,s:13,e:15}]}, {i: '22', p: 'قاضوی محمد', x: 'مرد', r: 'g', t: [{d:4,s:15,e:17}]}, {i: '23', p: 'نجفی برزگر', x: 'زن', t: [{d:2,s:8,e:10}]}, {i: '24', p: 'نجفی برزگر', x: 'مرد', t: [{d:2,s:10,e:12}]}, {i: '25', p: 'ملک‌مکان', x: 'زن', t: [{d:2,s:13,e:15}]}, {i: '26', p: 'قربانی عباس', x: 'مرد', r: 'r', t: [{d:2,s:15,e:17}]}, {i: '27', p: 'دهقانی زهیر', x: 'مرد', r: 'g', t: [{d:4,s:8,e:10}]}, {i: '28', p: 'دهقانی زهیر', x: 'زن', r: 'g', t: [{d:4,s:10,e:12}]}, {i: '29', p: 'احمدی مسلم', x: 'مرد', r: 'g', t: [{d:3,s:8,e:10}]}, {i: '30', p: 'احمدی مسلم', x: 'زن', r: 'g', t: [{d:3,s:10,e:12}]}, {i: '31', p: 'عسگری یزدی', x: 'مرد', r: 'r', t: [{d:1,s:13,e:15}]}, {i: '32', p: 'عسگری یزدی', x: 'زن', r: 'r', t: [{d:1,s:15,e:17}]}]},
+        { id: '1120009', t: 'انقلاب اسلامی', c: 'general', g: [{i: '03', p: 'سقای‌بی‌ریا', x: 'زن', t: [{d:4,s:8,e:10}]}, {i: '04', p: 'موسوی سیدرضا', x: 'زن', r: 'r', t: [{d:0,s:8,e:10}]}, {i: '05', p: 'موسوی سیدرضا', x: 'مرد', r: 'r', t: [{d:0,s:10,e:12}]}, {i: '06', p: 'موسوی سیدرضا', x: 'مرد', r: 'r', t: [{d:4,s:8,e:10}]}, {i: '07', p: 'موسوی سیدرضا', x: 'زن', r: 'r', t: [{d:4,s:10,e:12}]}, {i: '08', p: 'اسماعیلی علی', x: 'مرد', r: 'r', t: [{d:4,s:10,e:12}]}, {i: '09', p: 'اسماعیلی علی', x: 'زن', r: 'r', t: [{d:4,s:13,e:15}]}, {i: '10', p: 'واعظی عباس', x: 'زن', t: [{d:2,s:13,e:15}]}, {i: '11', p: 'واعظی عباس', x: 'مرد', t: [{d:2,s:15,e:17}]}, {i: '12', p: 'برخورداری', x: 'مرد', t: [{d:3,s:13,e:15}]}, {i: '16', p: 'کشوردوست', x: 'زن', t: [{d:4,s:7.5,e:9}]}, {i: '17', p: 'برخورداری', x: 'زن', t: [{d:4,s:9,e:10.5}]}, {i: '18', p: 'سلیمانی غلامعلی', x: 'مرد', t: [{d:4,s:13,e:15}]}, {i: '19', p: 'اخضریان', x: 'مرد', t: [{d:4,s:15,e:17}]}, {i: '20', p: 'نصیری رضا', x: 'زن', t: [{d:2,s:10.5,e:12}]}, {i: '21', p: 'نباتیان', x: 'مرد', t: [{d:0,s:10.5,e:12}]}, {i: '22', p: 'نباتیان', x: 'مرد', t: [{d:0,s:13,e:15}]}, {i: '23', p: 'محمدزاده حسن', x: 'مرد', t: [{d:0,s:15,e:17}]}, {i: '30', p: 'سقای‌بی‌ریا', x: 'زن', t: [{d:1,s:8,e:10}]}, {i: '31', p: 'سقای‌بی‌ریا', x: 'زن', t: [{d:1,s:10,e:12}]}]},
+        { id: '1120019', t: 'دانش خانواده', c: 'general', g: [{i: '03', p: 'ملکی ندا', x: 'زن', t: [{d:0,s:8,e:10}]}, {i: '04', p: 'ملکی ندا', x: 'زن', t: [{d:0,s:10,e:12}]}, {i: '05', p: 'شعربافچی', x: 'زن', r: 'g', t: [{d:4,s:8,e:10}]}, {i: '06', p: 'شعربافچی', x: 'زن', r: 'g', t: [{d:4,s:10,e:12}]}, {i: '07', p: 'خسروشاهی', x: 'زن', t: [{d:3,s:8,e:10}]}, {i: '08', p: 'شریفی محمد', x: 'مرد', t: [{d:4,s:13,e:15}]}, {i: '09', p: 'محمدزاده', x: 'زن', r: 'g', t: [{d:1,s:13,e:15}]}, {i: '10', p: 'بهاری', x: 'مرد', r: 'g', t: [{d:1,s:15,e:17}]}, {i: '11', p: 'ریحانی سعید', x: 'مرد', r: 'g', t: [{d:4,s:8,e:10}]}, {i: '12', p: 'ریحانی سعید', x: 'مرد', r: 'g', t: [{d:4,s:10,e:12}]}, {i: '13', p: 'نیاز آزاده', x: 'زن', r: 'g', t: [{d:4,s:8,e:10}]}, {i: '14', p: 'نیاز آزاده', x: 'زن', r: 'g', t: [{d:4,s:10,e:12}]}, {i: '19', p: 'مرادی منصور', x: 'مرد', r: 'y', t: [{d:4,s:8,e:10}]}, {i: '20', p: 'مرادی منصور', x: 'مرد', r: 'y', t: [{d:4,s:10,e:12}]}, {i: '21', p: 'ریحانی سعید', x: 'مرد', r: 'g', t: [{d:3,s:8,e:10}]}, {i: '22', p: 'ریحانی سعید', x: 'مرد', r: 'g', t: [{d:3,s:10,e:12}]}, {i: '23', p: 'گروه آموزشی', x: 'مرد', t: [{d:0,s:13,e:15}]}, {i: '24', p: 'گروه آموزشی', x: 'مرد', t: [{d:0,s:15,e:17}]}, {i: '25', p: 'ملکی ندا', x: 'زن', t: [{d:1,s:8,e:10}]}, {i: '26', p: 'ملکی ندا', x: 'زن', t: [{d:1,s:10,e:12}]}]},
+        { id: '1120020', t: 'تربیت بدنی (پسران)', c: 'general', g: [{i: '01', p: 'کیانی خسرو', x: 'مرد', t: [{d:0,s:8,e:10}]}, {i: '02', p: 'مومنی‌فر', x: 'مرد', t: [{d:0,s:10,e:12}]}, {i: '03', p: 'سنجری محمد', x: 'مرد', t: [{d:0,s:13,e:15}]}, {i: '05', p: 'حسینی روح‌الله', x: 'مرد', t: [{d:1,s:8,e:10}]}, {i: '07', p: 'تکلو نیما', x: 'مرد', t: [{d:1,s:13,e:15}]}, {i: '08', p: 'تکلو نیما', x: 'مرد', t: [{d:1,s:15,e:17}]}, {i: '09', p: 'حسینی/امینانی', x: 'مرد', t: [{d:2,s:8,e:10}]}, {i: '10', p: 'امینانی', x: 'مرد', t: [{d:2,s:10,e:12}]}, {i: '11', p: 'رحیم‌زاده', x: 'مرد', t: [{d:2,s:13,e:15}]}, {i: '12', p: 'کردی حسن', x: 'مرد', t: [{d:2,s:15,e:17}]}, {i: '13', p: 'محمودی احمد', x: 'مرد', t: [{d:3,s:8,e:10}]}, {i: '14', p: 'زیویار فرزاد', x: 'مرد', t: [{d:3,s:10,e:12}]}, {i: '15', p: 'محبی محمود', x: 'مرد', t: [{d:3,s:13,e:15}]}, {i: '16', p: 'محبی محمود', x: 'مرد', t: [{d:3,s:15,e:17}]}, {i: '17', p: 'کیانی خسرو', x: 'مرد', t: [{d:4,s:8,e:10}]}, {i: '18', p: 'زیویار فرزاد', x: 'مرد', t: [{d:4,s:10,e:12}]}, {i: '19', p: 'زیویار فرزاد', x: 'مرد', t: [{d:4,s:13,e:15}]}, {i: '20', p: 'فلاحی زانیار', x: 'مرد', t: [{d:4,s:15,e:17}]}]},
+        { id: '1120021', t: 'ورزش ۱ (پسران)', c: 'general', g: [{i: '01', p: 'کردی حسن', x: 'مرد', t: [{d:0,s:8,e:10}]}, {i: '02', p: 'ذوقی', x: 'مرد', t: [{d:0,s:10,e:12}]}, {i: '03', p: 'ذوقی', x: 'مرد', t: [{d:0,s:13,e:15}]}, {i: '04', p: 'کردی حسن', x: 'مرد', t: [{d:0,s:15,e:17}]}, {i: '05', p: 'بختیاری', x: 'مرد', t: [{d:1,s:8,e:10}]}, {i: '06', p: 'بختیاری', x: 'مرد', t: [{d:1,s:10,e:12}]}]},
+        { id: '1120030', t: 'تاریخ تحلیلی صدر اسلام', c: 'general', g: [{i: '01', p: 'صادقی مهسا', x: 'مختلط', t: [{d:0,s:16,e:18}]}, {i: '03', p: 'صادقی مهسا', x: 'مختلط', t: [{d:0,s:10,e:12}]}]},
+        { id: '1120034', t: 'سواد مالی', c: 'general', g: [{i: '01', p: 'نظری محسن', x: 'مختلط', t: [{d:0,s:16,e:18}]}, {i: '02', p: 'صادقی مهسا', x: 'مختلط', t: [{d:0,s:16,e:18}]}]},
+        { id: '1120035', t: 'شناخت محیط زیست', c: 'general', g: [{i: '01', p: 'شهریاری تکتم', x: 'مختلط', r: 'g', t: [{d:3,s:8,e:10}]}, {i: '02', p: 'زبردست لعبت', x: 'مختلط', t: [{d:3,s:10,e:12}]}]}
+    ];
+
+    const courses = rawData.map((c, i) => {
+        c.color = c.c === 'specialized' ? `c-sp-${(i % 8) + 1}` : 'c-gen';
+        return c;
+    });
+
+    let currentTab = 'specialized';
+    let plans = [{ id: 0, selections: {} }];
+    let activePlanIndex = 0;
+
+    function initGrid() {
+        const timeLabelsContainer = document.getElementById('timeLabels');
+        timeLabelsContainer.innerHTML = '';
+        for(let h = START_HOUR; h <= END_HOUR; h++) {
+            const div = document.createElement('div');
+            div.className = 'time-label';
+            div.innerText = `${h}:00`;
+            timeLabelsContainer.appendChild(div);
+        }
+        const totalHeight = (END_HOUR - START_HOUR + 1) * PX_PER_HOUR;
+        document.querySelectorAll('.day-lane').forEach(lane => lane.style.height = totalHeight + 'px');
+    }
+
+    function loadState() {
+        const data = localStorage.getItem(STORAGE_KEY);
+        if (data) {
+            const parsed = JSON.parse(data);
+            plans = parsed.plans || [{ id: 0, selections: {} }];
+            activePlanIndex = parsed.activePlanIndex || 0;
+        }
+        renderPlanTabs();
+    }
+
+    function saveState() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({ plans, activePlanIndex }));
+    }
+
+    function renderPlanTabs() {
+        const container = document.getElementById('planTabsContainer');
+        container.querySelectorAll('.plan-tab').forEach(t => t.remove());
+        plans.forEach((plan, index) => {
+            const btn = document.createElement('button');
+            btn.className = `plan-tab ${index === activePlanIndex ? 'active' : ''}`;
+            btn.onclick = () => switchPlan(index);
+            btn.innerHTML = `<span class="desktop-only">برنامه </span><span>${index + 1}</span>`;
+            container.insertBefore(btn, container.lastElementChild);
+        });
+    }
+
+    function switchPlan(index) {
+        activePlanIndex = index;
+        saveState();
+        renderPlanTabs();
+        renderCourseList();
+        renderSchedule();
+    }
+
+    function addNewPlan() {
+        plans.push({ id: plans.length, selections: {} });
+        activePlanIndex = plans.length - 1;
+        saveState();
+        renderPlanTabs();
+        renderCourseList();
+        renderSchedule();
+    }
+
+    function deleteCurrentPlan() {
+        if (plans.length === 1) {
+            if(confirm('همه انتخاب‌های این برنامه پاک شود؟')) {
+                plans[0].selections = {};
+                saveState(); renderCourseList(); renderSchedule();
+            }
+            return;
+        }
+        if(confirm('این برنامه حذف شود؟')) {
+            plans.splice(activePlanIndex, 1);
+            activePlanIndex = Math.max(0, activePlanIndex - 1);
+            plans.forEach((p, i) => p.id = i);
+            saveState(); renderPlanTabs(); renderCourseList(); renderSchedule();
+        }
+    }
+
+    function setTab(tab) {
+        currentTab = tab;
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.onclick.toString().includes(tab)));
+        renderCourseList();
+    }
+    
+    function renderCourseList() {
+        const query = document.getElementById('searchInput').value.trim();
+        const container = document.getElementById('accordion-container');
+        container.innerHTML = '';
+        const visible = courses.filter(c => c.c === currentTab && (c.t.includes(query) || c.id.includes(query) || c.g.some(g => g.p.includes(query))));
+
+        visible.forEach(c => {
+            const item = document.createElement('div');
+            item.className = 'course-group';
+            const selection = plans[activePlanIndex].selections[c.id] || 'none';
+            let html = `<div class="accordion-header" onclick="toggleAccordion(this)"><span><span class="course-tag ${c.color}"></span>${c.t}</span><span style="font-size:0.8em; background:#eee; padding:2px 6px; border-radius:4px">${c.g.length} گروه</span></div><div class="accordion-body"><div class="prof-grid">
+                <label class="prof-option"><input type="radio" name="${c.id}" value="none" ${selection === 'none' ? 'checked' : ''} onchange="handleSelection('${c.id}', 'none')"><span class="prof-card"><span>انتخاب نشده</span></span></label>`;
+            c.g.forEach(g => {
+                html += `<label class="prof-option"><input type="radio" name="${c.id}" value="${g.i}" ${selection === g.i ? 'checked' : ''} onchange="handleSelection('${c.id}', '${g.i}')"><span class="prof-card"><span>${g.r ? `<span class="rank-dot rank-${g.r}"></span>` : ''}${g.p}</span><span class="gender-badge">${g.x}</span></span></label>`;
+            });
+            item.innerHTML = html + `</div></div>`;
+            container.appendChild(item);
+        });
+    }
+
+    function toggleAccordion(header) {
+        header.classList.toggle('active');
+        header.nextElementSibling.classList.toggle('open');
+    }
+
+    function handleSelection(courseId, groupId) {
+        plans[activePlanIndex].selections[courseId] = groupId;
+        saveState();
+        renderSchedule();
+    }
+
+    // --- NEW: INTERACTION HANDLER FOR DELETION ---
+    function attachDeletionListeners(el, courseId) {
+        // Desktop: Double Click
+        el.addEventListener('dblclick', () => {
+            handleSelection(courseId, 'none');
+            renderCourseList();
+        });
+
+        // Mobile: Tap and Hold (Long Press)
+        let timer;
+        const start = () => {
+            timer = setTimeout(() => {
+                if(confirm("این درس حذف شود؟")) {
+                    handleSelection(courseId, 'none');
+                    renderCourseList();
+                }
+            }, 700);
+        };
+        const cancel = () => clearTimeout(timer);
+
+        el.addEventListener('touchstart', start, {passive: true});
+        el.addEventListener('touchend', cancel);
+        el.addEventListener('touchmove', cancel);
+    }
+
+    function renderSchedule() {
+        for(let i=0; i<5; i++) document.getElementById(`day-${i}`).innerHTML = '';
+        const events = [];
+        const isMobile = window.innerWidth <= 900;
+        const currentSelections = plans[activePlanIndex].selections;
+
+        courses.forEach(c => {
+            const gid = currentSelections[c.id];
+            if (gid && gid !== 'none') {
+                const group = c.g.find(g => g.i === gid);
+                if(group) group.t.forEach(t => events.push({title: (isMobile && shortNames[c.t]) ? shortNames[c.t] : c.t, prof: isMobile ? group.p.split(' ')[0] : group.p, day: t.d, start: t.s, end: t.e, color: c.color, id: c.id}));
+            }
+        });
+
+        events.sort((a,b) => a.start - b.start);
+        const processed = new Set();
+        for (let i = 0; i < events.length; i++) {
+            if (processed.has(i)) continue;
+            let cluster = [events[i]]; processed.add(i);
+            for (let j = i + 1; j < events.length; j++) {
+                if (!processed.has(j) && events[j].day === events[i].day && Math.max(events[i].start, events[j].start) < Math.min(events[i].end, events[j].end)) { cluster.push(events[j]); processed.add(j); }
+            }
+            cluster.forEach((ev, idx) => { ev.width = (96/cluster.length) - (cluster.length>1?1:0); ev.left = 2 + (idx*(96/cluster.length)); ev.conf = cluster.length>1; });
+        }
+
+        events.forEach(ev => {
+            const el = document.createElement('div');
+            el.className = `event ${ev.color} ${ev.conf ? 'conflict-overlap' : ''}`;
+            el.style.top = `${(ev.start-START_HOUR)*PX_PER_HOUR}px`;
+            el.style.height = `${(ev.end-ev.start)*PX_PER_HOUR}px`;
+            el.style.width = `calc(${ev.width}% - ${ev.conf?2:0}px)`;
+            el.style.left = `${ev.left}%`;
+            el.innerHTML = `<span class="event-time">${formatTime(ev.start)}${!isMobile ? ' - '+formatTime(ev.end) : ''}</span><strong>${ev.title}</strong><span class="event-prof">${ev.prof}</span>`;
+            el.title = isMobile ? "برای حذف نگه دارید" : "برای حذف دوبار کلیک کنید";
+            
+            attachDeletionListeners(el, ev.id);
+            document.getElementById(`day-${ev.day}`).appendChild(el);
+        });
+    }
+
+    function formatTime(t) {
+        const h = Math.floor(t), m = Math.round((t-h)*60);
+        return `${h}:${m===0?'00':m}`;
+    }
+
+    window.addEventListener('resize', renderSchedule); 
+    initGrid(); loadState(); renderCourseList(); renderSchedule();
+</script>
+</body>
+</html>
