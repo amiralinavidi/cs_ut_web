@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>دستیار انتخاب واحد مکانیک - نسخه جامع</title>
+    <title>دستیار انتخاب واحد مکانیک - نسخه نهایی</title>
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/misc/Farsi-Digits/font-face.css" rel="stylesheet" type="text/css" />
     
     <style>
@@ -434,6 +434,7 @@
     const PX_PER_HOUR = 60;
     const STORAGE_KEY = 'course_planner_v9';
     const COURSE_DATA_KEY = 'course_data_v9';
+    const dayNames = ['شنبه', '۱شنبه', '۲شنبه', '۳شنبه', '۴شنبه'];
 
     const icons = {
         pencil: '<svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>',
@@ -574,6 +575,17 @@
         renderCourseList();
     }
     
+    function formatClassTimes(times) {
+        if(!times || !times.length) return '';
+        const groups = {};
+        times.forEach(t => {
+            const timeKey = `${formatTime(t.s)}-${formatTime(t.e)}`;
+            if(!groups[timeKey]) groups[timeKey] = [];
+            groups[timeKey].push(dayNames[t.d]);
+        });
+        return Object.entries(groups).map(([time, days]) => `${days.join('، ')} ${time}`).join(' | ');
+    }
+
     function renderCourseList() {
         const query = document.getElementById('searchInput').value.trim();
         const container = document.getElementById('accordion-container');
@@ -620,10 +632,14 @@
                     </label>`;
             
             c.g.forEach(g => {
+                const timeStr = formatClassTimes(g.t);
                 html += `<label class="prof-option">
                     <input type="radio" name="${c.id}" value="${g.i}" ${selection === g.i ? 'checked' : ''} onchange="handleSelection('${c.id}', '${g.i}')">
                     <span class="prof-card">
-                        <span>${g.p}${g.r ? `<span class="rank-dot rank-${g.r}"></span>` : ''}</span>
+                        <div style="display:flex; flex-direction:column">
+                            <span>${g.p}${g.r ? `<span class="rank-dot rank-${g.r}"></span>` : ''}</span>
+                            <span style="font-size:0.75em; color:#95a5a6; margin-top:2px">${timeStr}</span>
+                        </div>
                         ${g.x ? `<span style="font-size:0.8em; opacity:0.7">${g.x}</span>` : ''}
                     </span>
                 </label>`;
